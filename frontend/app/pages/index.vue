@@ -1,17 +1,21 @@
 <template>
-  <div class="max-w-4xl mx-auto">
-    <div class="terminal-box mb-8">
-      <pre class="ascii-art text-accent">
- _     _ _ _ _   _       ____             _             
-| |   (_) (_) |_| |__   |  _ \ __ _ _ __| | _____ _ __ 
-| |   | | | | __| '_ \  | |_) / _` | '__| |/ / _ \ '__|
-| |___| | | | |_| | | | |  __/ (_| | |  |   <  __/ |   
-|_____|_|_|_|\__|_| |_| |_|   \__,_|_|  |_|\_\___|_|   
+  <div class="max-width-container">
+    <!-- ASCII Art Banner -->
+    <section class="terminal-box mb-8">
+      <pre class="ascii-art text-accent text-xs sm:text-sm md:text-base">
+ ___       ___  ___       ___  _________  ___  ___     
+|\  \     |\  \|\  \     |\  \|\___   ___\\  \|\  \    
+\ \  \    \ \  \ \  \    \ \  \|___ \  \_\ \  \\\  \   
+ \ \  \    \ \  \ \  \    \ \  \   \ \  \ \ \   __  \  
+  \ \  \____\ \  \ \  \____\ \  \   \ \  \ \ \  \ \  \ 
+   \ \_______\ \__\ \_______\ \__\   \ \__\ \ \__\ \__\
+    \|_______|\|__|\|_______|\|__|    \|__|  \|__|\|__|
       </pre>
-    </div>
-    
+    </section>
+
+    <!-- Welcome Section -->
     <section class="mb-12">
-      <h1 class="text-2xl font-bold mb-4">
+      <h1 class="text-2xl font-bold mb-4 font-mono">
         <span class="text-accent">$</span> whoami
       </h1>
       <div class="terminal-box">
@@ -22,18 +26,24 @@
           welcome to my corner of the I2P network. here you'll find my thoughts on code, 
           technology, and whatever else crosses my mind.
         </p>
+        <div class="mt-4 text-xs text-text-secondary">
+          <span class="text-accent">&gt;&gt;</span> last updated: {{ currentDate }}
+        </div>
       </div>
     </section>
-    
+
+    <!-- Recent Posts -->
     <section class="mb-12">
-      <h2 class="text-xl font-bold mb-4">
+      <h2 class="text-xl font-bold mb-4 font-mono">
         <span class="text-accent">$</span> recent_posts
       </h2>
       <div v-if="loading" class="terminal-box">
-        <p class="text-text-secondary">loading<span class="blink">_</span></p>
+        <p class="text-text-secondary">
+          loading<span class="blink">_</span>
+        </p>
       </div>
       <div v-else-if="error" class="terminal-box">
-        <p class="text-red-500">error: {{ error }}</p>
+        <p class="text-error">error: {{ error }}</p>
       </div>
       <div v-else>
         <BlogPostCard 
@@ -43,22 +53,25 @@
         />
         <NuxtLink 
           to="/blog" 
-          class="inline-block mt-4 px-4 py-2 border border-accent text-accent hover:bg-accent hover:text-bg-primary transition-colors"
+          class="inline-block mt-4 px-4 py-2 border border-accent text-accent hover:bg-accent hover:text-bg-primary transition-colors font-mono"
         >
-          view all posts →
+          <span class="text-accent">[</span> view all posts <span class="text-accent">]</span>
         </NuxtLink>
       </div>
     </section>
-    
+
+    <!-- Latest Thoughts (BlueSky) -->
     <section>
-      <h2 class="text-xl font-bold mb-4">
+      <h2 class="text-xl font-bold mb-4 font-mono">
         <span class="text-accent">$</span> latest_thoughts
       </h2>
       <div v-if="bskyLoading" class="terminal-box">
-        <p class="text-text-secondary">loading<span class="blink">_</span></p>
+        <p class="text-text-secondary">
+          loading<span class="blink">_</span>
+        </p>
       </div>
       <div v-else-if="bskyError" class="terminal-box">
-        <p class="text-red-500">error: {{ bskyError }}</p>
+        <p class="text-error">error: {{ bskyError }}</p>
       </div>
       <div v-else>
         <BskyPostCard 
@@ -68,10 +81,32 @@
         />
         <NuxtLink 
           to="/social" 
-          class="inline-block mt-4 px-4 py-2 border border-accent text-accent hover:bg-accent hover:text-bg-primary transition-colors"
+          class="inline-block mt-4 px-4 py-2 border border-accent text-accent hover:bg-accent hover:text-bg-primary transition-colors font-mono"
         >
-          view all posts →
+          <span class="text-accent">[</span> view all posts <span class="text-accent">]</span>
         </NuxtLink>
+      </div>
+    </section>
+
+    <!-- Quick Stats -->
+    <section class="mt-12 terminal-box">
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-center text-sm">
+        <div>
+          <div class="text-2xl text-accent font-bold">{{ publishedPostsCount }}</div>
+          <div class="text-text-secondary">blog posts</div>
+        </div>
+        <div>
+          <div class="text-2xl text-accent font-bold">{{ bskyPostsCount }}</div>
+          <div class="text-text-secondary">social posts</div>
+        </div>
+        <div>
+          <div class="text-2xl text-accent font-bold">{{ categoriesCount }}</div>
+          <div class="text-text-secondary">categories</div>
+        </div>
+        <div>
+          <div class="text-2xl text-accent font-bold">∞</div>
+          <div class="text-text-secondary">caffeine consumed</div>
+        </div>
       </div>
     </section>
   </div>
@@ -97,6 +132,19 @@ const latestPosts = computed(() =>
   bskyStore.posts.slice(0, 5)
 )
 
+const publishedPostsCount = computed(() => blogStore.publishedPosts.length)
+const bskyPostsCount = computed(() => bskyStore.posts.length)
+const categoriesCount = computed(() => 3)
+
+const currentDate = computed(() => {
+  const date = new Date()
+  return date.toLocaleDateString('en-US', { 
+    year: 'numeric', 
+    month: 'long', 
+    day: 'numeric' 
+  })
+})
+
 onMounted(async () => {
   await blogStore.fetchPosts()
   await bskyStore.fetchPosts(10)
@@ -105,7 +153,24 @@ onMounted(async () => {
 useHead({
   title: 'Lilith Parker - Home',
   meta: [
-    { name: 'description', content: 'chronically online cat-girl who likes programming, music, and burritos' }
+    { 
+      name: 'description', 
+      content: 'chronically online cat-girl who likes programming, music, and burritos' 
+    }
   ]
 })
 </script>
+
+<style scoped>
+.ascii-art {
+  font-family: 'Courier New', monospace;
+  line-height: 1.2;
+  margin: 0;
+  overflow-x: auto;
+}
+
+.max-width-container {
+  max-width: 900px;
+  margin: 0 auto;
+}
+</style>

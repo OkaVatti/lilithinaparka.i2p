@@ -1,0 +1,145 @@
+@import './theme.css';
+@import './colours.css';
+@import './components/head.css';
+@import './components/nav.css';
+@import './components/foot.css';
+@import './components/blog.css';
+@import './components/bsky.css';
+@import './components/profile.css';
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: 'Courier New', monospace;
+  background-color: #0a0a0a;
+  color: #e0e0e0;
+  line-height: 1.6;
+  overflow-x: hidden;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+.terminal-box {
+  border: 1px solid #333333;
+  padding: 1rem;
+  background-color: #1a1a1a;
+  font-family: 'Courier New', monospace;
+}
+
+.blink {
+  animation: blink 1s step-end infinite;
+}
+
+@keyframes blink {
+  0%, 50% { opacity: 1; }
+  51%, 100% { opacity: 0; }
+}
+
+code {
+  font-family: 'Courier New', monospace;
+  background-color: #1a1a1a;
+  padding: 0.2em 0.4em;
+  border-radius: 3px;
+  color: #8b8be9;
+  font-size: 0.9em;
+}
+
+pre {
+  background-color: #1a1a1a;
+  border: 1px solid #333333;
+  padding: 1rem;
+  overflow-x: auto;
+  border-radius: 4px;
+}
+
+pre code {
+  background-color: transparent;
+  padding: 0;
+  border-radius: 0;
+  color: #e0e0e0;
+}
+
+blockquote {
+  border-left: 3px solid #8b8be9;
+  padding-left: 1rem;
+  margin: 1rem 0;
+  color: #a0a0a0;
+  font-style: italic;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1rem 0;
+}
+
+th, td {
+  border: 1px solid #333333;
+  padding: 0.5rem;
+  text-align: left;
+}
+
+th {
+  background-color: #1a1a1a;
+  color: #8b8be9;
+}
+
+.prose {
+  max-width: 75ch;
+}
+
+.prose h1, .prose h2, .prose h3, .prose h4, .prose h5, .prose h6 {
+  color: #e0e0e0;
+  margin-top: 1.5em;
+  margin-bottom: 0.5em;
+  font-weight: bold;
+}
+
+.prose h1 { font-size: 2em; }
+.prose h2 { font-size: 1.5em; }
+.prose h3 { font-size: 1.25em; }
+
+.prose p {
+  margin: 1em 0;
+}
+
+.prose ul, .prose ol {
+  margin: 1em 0;
+  padding-left: 2em;
+}
+
+.prose li {
+  margin: 0.5em 0;
+}
+
+.prose a {
+  color: #7568ff;
+  text-decoration: underline;
+}
+
+.prose a:hover {
+  color: #8b8be9;
+}

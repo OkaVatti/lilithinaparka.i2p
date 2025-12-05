@@ -1,0 +1,42 @@
+.profile-section {
+  border: 1px solid var(--border);
+  padding: 1.5rem;
+  background-color: var(--bg-secondary);
+  margin-bottom: 1.5rem;
+}
+
+.profile-pic {
+  border: 2px solid var(--accent);
+  width: 128px;
+  height: 128px;
+}
+
+.profile-interest-tag {
+  display: inline-block;
+  padding: 0.5rem 0.75rem;
+  background-color: var(--bg-primary);
+  border: 1px solid var(--accent);
+  color: var(--accent);
+  font-size: 0.875rem;
+  margin: 0.25rem;
+}
+
+.profile-link {
+  color: var(--link);
+  transition: color 0.2s ease;
+}
+
+.profile-link:hover {
+  color: var(--accent);
+}
+
+.crypto-address {
+  font-family: 'Courier New', monospace;
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  word-break: break-all;
+  background-color: var(--bg-primary);
+  padding: 0.5rem;
+  border: 1px solid var(--border);
+  margin-top: 0.5rem;
+}
