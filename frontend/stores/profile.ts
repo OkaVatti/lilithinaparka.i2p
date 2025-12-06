@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import type { Profile } from '~/types'
+import type { Profile } from '../types'
 
 export const useProfileStore = defineStore('profile', {
   state: () => ({

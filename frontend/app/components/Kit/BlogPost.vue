@@ -1,3 +1,4 @@
+<!-- app/components/Branding/BlogPost.vue -->
 <template>
   <article class="blog-post-full">
     <header class="mb-8">

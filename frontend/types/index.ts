@@ -1,3 +1,4 @@
+// app/types/index.ts
 export interface BlogPost {
   id: number
   created_at: string
@@ -47,6 +48,7 @@ export interface Profile {
   updated_at: string
   pic: string
   name: string
+  username: string
   cake_day: string
   bio: string
   interests: string
@@ -55,12 +57,15 @@ export interface Profile {
   website: string
   email: string
   github: string
+  gitten: string
   bluesky: string
+  bottletail: string
   rss_feed: string
-  bitcoin_donation_addr: string
-  ethereum_donation_addr: string
-  solana_donation_addr: string
-  monero_donation_addr: string
+  bitcoin: string
+  ethereum: string
+  solana: string
+  monero: string
+  rss: string
   bsky_display_name: string
   bsky_description: string
   bsky_avatar: string
@@ -68,4 +73,51 @@ export interface Profile {
   bsky_followers_count: number
   bsky_follows_count: number
   bsky_posts_count: number
+}
+
+export interface Artwork {
+  id: number
+  title: string
+  image: string
+  category: string
+  tags: string[]
+  description: string
+  year: number
+  created_at: string
+  updated_at: string
+}
+
+export interface Project {
+  id: number
+  name: string
+  description: string
+  tags: string[]
+  status: 'active' | 'development' | 'maintenance' | 'archived'
+  stars: number
+  language: string
+  github: string
+  created_at: string
+  updated_at: string
+}
+
+export interface Game {
+  id: number
+  name: string
+  description: string
+  category: string
+  tags: string[]
+  players: string
+  status: 'playable' | 'development' | 'active' | 'planned'
+  features: string[]
+  created_at: string
+  updated_at: string
+}
+
+export interface SocialLink {
+  platform: string
+  username: string
+  url: string
+  icon: string
+  color: string
+  description: string
 }

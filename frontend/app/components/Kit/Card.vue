@@ -1,3 +1,4 @@
+<!-- app/components/Branding/Card.vue -->
 <template>
   <div class="terminal-box card-component">
     <slot />

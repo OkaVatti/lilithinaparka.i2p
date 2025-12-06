@@ -1,45 +1,50 @@
+<!-- app/components/Kit/BackgroundAnimation.vue -->
 <template>
   <div class="background-animation">
-    <div class="matrix-rain" ref="matrixCanvas"></div>
+    <canvas ref="matrixCanvas" class="matrix-rain"></canvas>
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from 'vue'
 
-const matrixCanvas = ref<HTMLDivElement | null>(null)
+const matrixCanvas = ref<HTMLCanvasElement | null>(null)
 let animationId: number | null = null
+let ctx: CanvasRenderingContext2D | null = null
 
 const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789@#$%^&*()_+-=[]{}|;:,.<>?/~`'
 const fontSize = 14
-const columns: number[] = []
 const drops: number[] = []
+
+const getRandomChar = (): string => {
+  const index = Math.floor(Math.random() * characters.length)
+  return characters[index]!
+}
 
 onMounted(() => {
   if (!matrixCanvas.value) return
   
-  const canvas = document.createElement('canvas')
-  const ctx = canvas.getContext('2d')
+  const canvas = matrixCanvas.value
+  const context = canvas.getContext('2d')
   
-  if (!ctx) return
+  if (!context) return
+  ctx = context
   
   canvas.width = window.innerWidth
   canvas.height = window.innerHeight
-  canvas.style.position = 'fixed'
-  canvas.style.top = '0'
-  canvas.style.left = '0'
-  canvas.style.zIndex = '-1'
-  canvas.style.opacity = '0.05'
-  
-  matrixCanvas.value.appendChild(canvas)
   
   const columnCount = Math.floor(canvas.width / fontSize)
   
+  // Initialize drops array
   for (let i = 0; i < columnCount; i++) {
     drops[i] = Math.random() * -100
   }
   
   const draw = () => {
+    const canvas = matrixCanvas.value
+    if (!ctx || !canvas) return
+    
+    // Clear with semi-transparent black for fade effect
     ctx.fillStyle = 'rgba(10, 10, 10, 0.05)'
     ctx.fillRect(0, 0, canvas.width, canvas.height)
     
@@ -47,17 +52,18 @@ onMounted(() => {
     ctx.font = `${fontSize}px monospace`
     
     for (let i = 0; i < drops.length; i++) {
-      const char = characters[Math.floor(Math.random() * characters.length)]
+      const char = getRandomChar() // Use helper function to ensure non-undefined
       const x = i * fontSize
-      const y = drops[i] * fontSize
+      const y = drops[i]! * fontSize // Use non-null assertion since we initialized all indices
       
       ctx.fillText(char, x, y)
       
+      // Reset drop when it goes past bottom with some randomness
       if (y > canvas.height && Math.random() > 0.975) {
         drops[i] = 0
       }
       
-      drops[i]++
+      drops[i]!++ // Use non-null assertion
     }
     
     animationId = requestAnimationFrame(draw)
@@ -66,8 +72,20 @@ onMounted(() => {
   draw()
   
   const handleResize = () => {
+    if (!matrixCanvas.value || !ctx) return
+    
+    const canvas = matrixCanvas.value
     canvas.width = window.innerWidth
     canvas.height = window.innerHeight
+    
+    // Recalculate drops array for new width
+    const columnCount = Math.floor(canvas.width / fontSize)
+    
+    // Reset drops array for new column count
+    drops.length = 0
+    for (let i = 0; i < columnCount; i++) {
+      drops[i] = Math.random() * -100
+    }
   }
   
   window.addEventListener('resize', handleResize)
@@ -93,7 +111,12 @@ onMounted(() => {
 }
 
 .matrix-rain {
+  position: fixed;
+  top: 0;
+  left: 0;
   width: 100%;
   height: 100%;
+  z-index: -1;
+  opacity: 0.05;
 }
 </style>

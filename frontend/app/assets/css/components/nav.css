@@ -1,0 +1,320 @@
+/* app/assets/css/components/nav.css */
+
+/* Main Navigation Container */
+.nav-container {
+  @apply relative z-50;
+}
+
+/* Navigation Bar */
+.nav-bar {
+  @apply fixed top-0 left-0 right-0 border-b border-border bg-bg-primary/95 
+         backdrop-blur-lg shadow-lg transition-all duration-300;
+}
+
+.nav-bar.scrolled {
+  @apply bg-bg-primary/80;
+}
+
+/* Navigation Content */
+.nav-content {
+  @apply container mx-auto px-4 py-3 flex items-center justify-between;
+}
+
+/* ASCII Art Logo */
+.ascii-logo {
+  @apply font-mono text-accent hover:text-text-primary transition-colors 
+         duration-300 cursor-pointer;
+}
+
+.ascii-logo pre {
+  @apply text-xs sm:text-sm leading-tight tracking-tight;
+}
+
+.ascii-logo:hover pre {
+  @apply text-accent;
+  animation: glitch 0.5s infinite;
+}
+
+/* Navigation Menu */
+.nav-menu {
+  @apply flex gap-3 sm:gap-4 md:gap-6 font-mono text-sm sm:text-base;
+}
+
+/* Navigation Links */
+.nav-link {
+  @apply relative px-2 py-1 text-text-secondary hover:text-accent 
+         transition-colors duration-200;
+}
+
+.nav-link.active {
+  @apply text-accent;
+}
+
+.nav-link::before,
+.nav-link::after {
+  content: '[';
+  @apply text-accent opacity-0 transition-opacity duration-200;
+}
+
+.nav-link::after {
+  content: ']';
+}
+
+.nav-link:hover::before,
+.nav-link:hover::after,
+.nav-link.active::before,
+.nav-link.active::after {
+  @apply opacity-100;
+}
+
+.nav-link::before {
+  margin-right: 2px;
+}
+
+.nav-link::after {
+  margin-left: 2px;
+}
+
+/* Terminal-like indicator for active link */
+.nav-link.active::before {
+  content: '$ ';
+  @apply text-accent opacity-100 mr-1;
+}
+
+.nav-link.active::after {
+  content: '';
+  margin-left: 0;
+}
+
+/* Mobile Navigation Toggle */
+.nav-toggle {
+  @apply md:hidden p-2 text-text-secondary hover:text-accent 
+         transition-colors duration-200;
+}
+
+.nav-toggle-icon {
+  @apply w-6 h-6;
+}
+
+.nav-toggle-icon.open {
+  transform: rotate(90deg);
+}
+
+/* Mobile Navigation Menu */
+.nav-mobile-menu {
+  @apply fixed inset-x-0 top-16 bg-bg-primary/95 backdrop-blur-lg 
+         border-b border-border shadow-lg md:hidden transition-all 
+         duration-300 ease-in-out;
+  max-height: 0;
+  overflow: hidden;
+}
+
+.nav-mobile-menu.open {
+  max-height: 300px;
+  @apply py-4;
+}
+
+.nav-mobile-links {
+  @apply flex flex-col items-center gap-4 px-4;
+}
+
+.nav-mobile-link {
+  @apply w-full text-center py-2 text-text-secondary hover:text-accent 
+         hover:bg-bg-secondary/50 transition-all duration-200 
+         rounded-lg font-mono text-base;
+}
+
+.nav-mobile-link.active {
+  @apply text-accent bg-accent/10 border border-accent/20;
+}
+
+/* Navigation Breadcrumbs (for the list in Nav.vue) */
+.nav-breadcrumbs {
+  @apply flex flex-wrap gap-2 mt-4 px-4 py-3 bg-bg-secondary/50 
+         border border-border rounded-lg font-mono text-sm;
+}
+
+.nav-breadcrumb-item {
+  @apply px-3 py-1 text-text-secondary hover:text-accent 
+         hover:bg-bg-primary transition-colors duration-200 
+         rounded border border-transparent hover:border-accent/20;
+}
+
+.nav-breadcrumb-item.active {
+  @apply text-accent bg-accent/10 border-accent/30;
+}
+
+.nav-breadcrumb-separator {
+  @apply text-accent/50;
+}
+
+/* Navigation Command Line */
+.nav-command-line {
+  @apply mt-2 px-4 py-2 bg-bg-primary border border-border 
+         rounded font-mono text-xs text-text-secondary;
+}
+
+.nav-command-prompt {
+  @apply text-accent mr-2;
+}
+
+.nav-command-input {
+  @apply bg-transparent outline-none w-full text-text-primary;
+}
+
+/* Navigation Status Indicators */
+.nav-status {
+  @apply flex items-center gap-2 mt-2 px-4 font-mono text-xs;
+}
+
+.nav-status-dot {
+  @apply w-2 h-2 rounded-full bg-green-500 animate-pulse;
+}
+
+.nav-status-text {
+  @apply text-text-secondary;
+}
+
+/* Hover effects for the entire navigation */
+.nav-bar:hover {
+  @apply border-accent/30;
+  box-shadow: 0 0 20px rgba(139, 139, 233, 0.1);
+}
+
+/* Terminal cursor effect on hover */
+.nav-link:hover {
+  position: relative;
+}
+
+.nav-link:hover::after {
+  content: '▋';
+  @apply text-accent ml-1;
+  animation: blink 1s infinite;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .ascii-logo pre {
+    font-size: 0.6rem;
+    line-height: 1.1;
+  }
+  
+  .nav-menu {
+    gap: 2px;
+  }
+  
+  .nav-link {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.875rem;
+  }
+}
+
+@media (max-width: 640px) {
+  .ascii-logo pre {
+    font-size: 0.5rem;
+  }
+  
+  .nav-content {
+    padding: 0.5rem;
+  }
+}
+
+/* Animations */
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+@keyframes glitch {
+  0% {
+    text-shadow: 0.05em 0 0 var(--accent), -0.05em -0.025em 0 rgba(255, 0, 0, 0.75);
+  }
+  14% {
+    text-shadow: 0.05em 0 0 var(--accent), -0.05em -0.025em 0 rgba(255, 0, 0, 0.75);
+  }
+  15% {
+    text-shadow: -0.05em -0.025em 0 var(--accent), 0.025em 0.025em 0 rgba(0, 255, 0, 0.75);
+  }
+  49% {
+    text-shadow: -0.05em -0.025em 0 var(--accent), 0.025em 0.025em 0 rgba(0, 255, 0, 0.75);
+  }
+  50% {
+    text-shadow: 0.025em 0.05em 0 var(--accent), 0.05em 0 0 rgba(0, 0, 255, 0.75);
+  }
+  99% {
+    text-shadow: 0.025em 0.05em 0 var(--accent), 0.05em 0 0 rgba(0, 0, 255, 0.75);
+  }
+  100% {
+    text-shadow: -0.025em 0 0 var(--accent), -0.025em -0.025em 0 rgba(255, 0, 0, 0.75);
+  }
+}
+
+/* Loading state for navigation */
+.nav-loading {
+  @apply flex items-center gap-2 text-text-secondary font-mono text-sm;
+}
+
+.nav-loading-dots {
+  @apply flex gap-1;
+}
+
+.nav-loading-dot {
+  @apply w-1.5 h-1.5 rounded-full bg-accent;
+  animation: bounce 1.4s infinite ease-in-out both;
+}
+
+.nav-loading-dot:nth-child(1) {
+  animation-delay: -0.32s;
+}
+
+.nav-loading-dot:nth-child(2) {
+  animation-delay: -0.16s;
+}
+
+@keyframes bounce {
+  0%, 80%, 100% {
+    transform: scale(0);
+  }
+  40% {
+    transform: scale(1);
+  }
+}
+
+/* Navigation tooltips */
+.nav-tooltip {
+  @apply absolute z-50 px-3 py-2 text-xs font-mono bg-bg-secondary 
+         border border-accent/20 rounded-lg shadow-lg text-text-primary 
+         transition-opacity duration-200;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  opacity: 0;
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+.nav-link:hover .nav-tooltip {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* Navigation progress indicator (for loading states) */
+.nav-progress {
+  @apply absolute bottom-0 left-0 h-0.5 bg-gradient-to-r from-accent to-purple-500;
+  width: 0%;
+  transition: width 0.3s ease;
+}
+
+.nav-progress.loading {
+  width: 100%;
+  animation: progressPulse 2s infinite;
+}
+
+@keyframes progressPulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}

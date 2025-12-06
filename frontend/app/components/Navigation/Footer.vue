@@ -1,3 +1,4 @@
+<!-- app/components/Navigation/Footer.vue -->
 <template>
   <footer class="border-t border-border mt-16 py-8 bg-bg-primary font-mono">
     <div class="container mx-auto px-4">

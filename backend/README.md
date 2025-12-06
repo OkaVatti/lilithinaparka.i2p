@@ -1,132 +1,178 @@
-# Lilith Parker's I2P Blog - Backend
+# lilithinaparka.i2p - Backend API Server
 
-A Go backend server that scans markdown blog posts, fetches BlueSky data, and serves content via REST API.
+## Overview
 
-## Tech Stack
+This is the backend API server for the lilithinaparka.i2p portal. Built in Go, it provides a secure, performant REST API that manages blog content, user profiles, game leaderboards, media files, and external service integration (BlueSky). It is designed to run as a hidden service within the I2P network
 
-- **Language**: Go 1.25.4
-- **Framework**: Echo v4
-- **ORM**: GORM
-- **Database**: SQLite
-- **APIs**: BlueSky AT Protocol
+## ✨ Core Features
 
-## Features
+- Unified Content API: 
+    - CRUD operations for Markdown blog posts, BlueSky sync, art, and video metadata.
+- Game State Management: 
+    - Handles global leaderboards, score submission, and game save persistence.
+- File & Media Processing: 
+    - Ingests Markdown and media from the filesystem, generates thumbnails, and provides adaptive video streaming.
+- External Service Integration: 
+    - Scheduled synchronization with the BlueSky API (AT Protocol) and webhook handling.
+- Security-First Architecture: 
+    - JWT authentication for admin endpoints, rate limiting, and hardened headers. SQL injection prevented via parameterized queries.
+- I2P-Optimized: 
+    - Configured for higher latency tolerance and lower bandwidth consumption typical of garlic routing.
 
-- Markdown blog post scanning with frontmatter parsing
-- SQLite database for content storage
-- BlueSky API integration for social posts
-- Profile management from static config files
-- Automatic background sync (every 5 minutes)
-- RESTful API endpoints
-- CORS enabled for frontend integration
+## 🛠️ Tech Stack
+- Language: Go 1.21+
+- Database: SQLite 3.40+ (with WAL mode for performance)
+- Router: gorilla/mux
+- ORM/Data Layer: gorm.io/gorm
+- Config Management: viper or environment variables
+- Logging: Structured JSON logging with slog
+- Markdown Processing: goldmark with frontmatter
 
-## Setup
+## 🚀 Getting Started
+Prerequisites
+- Go: Version 1.21 or higher.
+- SQLite: Command-line tools (sqlite3) are helpful for debugging.
+- FFmpeg: Required for video thumbnail and transcode generation.
+- I2P Router: For full integration testing.
 
-1. Install Go dependencies:
+## Installation & Setup
+
+### Clone and Navigate:
+```bash
+
+git clone <your-repository-url>
+cd backend
+```
+
+### Install Dependencies:
 ```bash
 go mod download
 ```
 
-2. Create the blog directory structure:
+## Configure Environment:
+
+### Copy the example environment file and set your variables:
 ```bash
-mkdir -p blog/posts/Casual
-mkdir -p blog/posts/Interlude
-mkdir -p blog/posts/Serious
-mkdir -p blog/profile
-mkdir -p blog/assets/images
+cp .env.example .env
+# Edit .env with your settings
 ```
 
-3. Create `blog/profile/info.txt` with your profile information
+Key configuration includes DB_PATH, BSKY_APP_PASSWORD, JWT_SECRET, and server HOST/PORT.
 
-4. Add markdown blog posts to the appropriate category directories
+## Initialize the Database:
 
-5. Run the server:
+### Run migrations and seed initial data (like default admin user, game definitions):
 ```bash
-go run main.go
+go run cmd/migrate/main.go
+go run cmd/seed/main.go
 ```
 
-The server will start on `http://localhost:8080`
+## Development
 
-## API Endpoints
-
-### Blog Posts
-- `GET /api/blog/posts` - Get all blog posts (query: `?drafts=true`)
-- `GET /api/blog/posts/:slug` - Get post by slug
-- `GET /api/blog/category/:category` - Get posts by category
-- `GET /api/blog/tag/:tag` - Get posts by tag
-- `POST /api/blog/rescan` - Manually trigger blog post rescan
-
-### BlueSky
-- `GET /api/bsky/posts` - Get BlueSky posts (query: `?limit=50`)
-- `GET /api/bsky/post` - Get specific post (query: `?uri=...`)
-- `POST /api/bsky/refresh` - Manually refresh BlueSky posts
-
-### Profile
-- `GET /api/profile` - Get profile information
-- `POST /api/profile/refresh` - Manually refresh BlueSky profile data
-
-### Health
-- `GET /api/health` - Health check endpoint
-
-## Database Schema
-
-### BlogPost
-- Stores parsed markdown posts with frontmatter
-- Includes metadata like title, date, tags, categories
-- Tracks draft status and file paths
-
-### BskyPost
-- Stores BlueSky posts fetched via API
-- Includes engagement metrics (likes, reposts, etc.)
-- Handles media attachments
-
-### Profile
-- Stores static profile info from `info.txt`
-- Includes BlueSky profile data
-- Crypto donation addresses
-
-## Background Sync
-
-The server automatically syncs data every 5 minutes:
-1. Rescans blog posts for changes
-2. Fetches new BlueSky posts
-3. Updates BlueSky profile information
-
-## Markdown Format
-
-Blog posts should follow this frontmatter format:
-```markdown
----
-title: Post Title
-date: 2025-12-3
-time: 09:13
-authors: [Author Name]
-tags: [tag1, tag2]
-categories: [Casual]
-draft: false
-share: true
-slug: post-slug
-layout: post
-toc: true
-comments: true
-math: false
-featured_image: "path/to/image.png"
-summary: "Post summary"
----
-
-# Post Content
-
-Your markdown content here...
+### Start the development server with file watching:
+```bash
+go run main.go --dev
 ```
 
-## Deployment
+The API server will start, typically at http://localhost:8080. An API explorer (like Swagger UI, if configured) may be available.
 
-For production:
-1. Build the binary: `go build -o blog-server main.go`
-2. Ensure the `blog/` directory is present with content
-3. Run the server: `./blog-server`
-4. Configure I2P tunnel to expose port 8080
+## Building for Production
 
-## License
+### Create an optimized binary:
+```bash
+go build -ldflags="-s -w" -o dist/server main.go
+```
 
-MIT
+### Run the binary:
+```bash
+./dist/server --config ./config/production.yaml
+```
+
+## 📁 Project Structure
+
+### A detailed breakdown of the backend's internal organization:
+```text
+backend/
+├── cmd/                      # Application entry points (CLI tools)
+├── internal/                 # Private application code
+│   ├── api/handlers/        # HTTP request handlers
+│   ├── api/middleware/      # CORS, logging, auth, rate limiting[citation:4]
+│   ├── database/            # Models, migrations, and repositories
+│   ├── services/            # Core business logic (blog, bsky, games)
+│   └── utils/               # Shared utilities (cache, logger, validator)
+├── blog/                    # Content directory (Markdown, images, videos)
+├── db/                      # SQLite database file and migration scripts
+├── config/                  # Configuration files (YAML/JSON)
+├── go.mod
+├── main.go                  # Server entry point
+└── Dockerfile
+```
+
+## 🔧 Configuration
+
+### Configuration is managed through environment variables and/or YAML files, prioritized in this order:
+- Command-line flags
+- Environment variables (e.g., SERVER_PORT, DB_PATH)
+- Configuration file (e.g., config/production.yaml)
+- Default values in code
+
+> Security Note: Never commit files containing secrets (.env, config/local.yaml) to version control.
+
+## 🗄️ Database Management
+- Migrations: Database schema changes are managed using SQL migration files in db/migrations/. Use the cmd/migrate tool to apply them.
+- Seeding: Initial data (admin user, game entries) is populated via cmd/seed.
+- Backups: Implement a regular backup strategy for the SQLite file, especially before running migrations.
+
+## 🔌 API Specification
+
+### The backend provides a comprehensive REST API. Key endpoints include:
+
+| Method | Endpoint             | Description                              | Auth Required                  |
+| ------ | -------------------- | ---------------------------------------- | ------------------------------ |
+| GET    | /api/health          | Server Health Check                      | No                             |
+| GET    | /api/blog/posts      | Paginated list of blog posts             | No                             |
+| POST   | /api/auth/login      | Admin login (Requires JWT + Private-Key) | No                             |
+| POST   | /api/games/:id/score | Submit a game score                      | No (rate-limited)              |
+| POST   | /api/media/upload    | Upload an Image or Video                 | YES (Admin JWT + Private Key)  |
+
+### CORS Policy: 
+
+In production, the Access-Control-Allow-Origin header is strictly set to your I2P eepsite address (e.g., http://your-site.b32.i2p). 
+During development, it can be set to http://localhost:3000
+
+## 🔒 Security & Hardening
+
+This backend is designed for deployment on I2P, which adds inherent network-layer privacy
+
+Additional measures include:
+- Authentication: JWT-based auth for admin routes. Passwords hashed with argon2id.
+- Input Validation: All incoming data is validated using struct tags and custom validators before processing.
+- Rate Limiting: Implemented globally and per-endpoint (e.g., on /api/games/*/score) to prevent abuse.
+- Headers: Security headers like X-Frame-Options: DENY, X-Content-Type-Options: nosniff are set by middleware.
+
+## 📊 Deployment
+
+- I2P Tunnel Configuration
+    - To expose the backend as an I2P eepsite, you must configure an HTTP tunnel in your I2P router console. The tunnel should point to the backend server's host and port (e.g., 127.0.0.1:8080)
+- Systemd Service (Linux)
+    - For production deployments, a systemd service file ensures the backend starts automatically and restarts on failure. An example is provided in the deployment/ directory.
+- Docker Deployment
+    - A Dockerfile and docker-compose.yml are provided for containerized deployment, which is highly recommended for consistency.
+
+### Build and run:
+```bash
+docker-compose up --build -d
+```
+
+### View logs:
+```bash
+docker-compose logs -f
+```
+
+## 🔍 Monitoring & Troubleshooting
+- Logs: Check structured JSON logs for request details and errors. Log level can be set via LOG_LEVEL env var.
+- Health Endpoint: GET /api/health returns server status and database connectivity.
+- Common Issues:
+    - "Database is locked": Ensure only one instance of the backend is writing to the SQLite file.
+    - CORS errors from frontend: Verify the CORS origin setting in the backend configuration matches the frontend's origin exactly
+    - BlueSky sync failing: Check the BSKY_APP_PASSWORD and handle in the .env file. Review service logs for API errors.
