@@ -3,6 +3,7 @@ module github.com/okavatti/lilithinaparka.i2p/backend/m/v2
 go 1.25.4
 
 require (
+	github.com/golang-jwt/jwt/v5 v5.3.0
 	github.com/labstack/echo/v4 v4.13.4
 	github.com/radovskyb/watcher v1.0.7
 	gopkg.in/yaml.v3 v3.0.1

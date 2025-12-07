@@ -26,7 +26,7 @@ A minimal, TUI-inspired blog frontend built with Nuxt 4, Deno, and TailwindCSS v
 
 1. Install dependencies:
 ```bash
-npm install
+deno install
 ```
 
 2. Configure environment variables:

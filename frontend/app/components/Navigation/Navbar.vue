@@ -1,10 +1,12 @@
-<!-- app/components/Navigation/NavBar.vue -->
+<!-- frontend/app/components/Navigation/Navbar.vue -->
 <template>
-  <header class="nav-bar sticky top-0 z-50">
+  <header class="nav-bar sticky top-0 z-50" :class="{ 'scrolled': isScrolled }">
     <div class="nav-content">
       <!-- ASCII Logo -->
       <NuxtLink to="/" class="ascii-logo">
-        <ASCIIHeader/>
+        <pre class="text-xs sm:text-sm leading-tight tracking-tight">
+          <BrandingASCIIHeader/>
+        </pre>
       </NuxtLink>
       
       <!-- Desktop Navigation -->
@@ -28,6 +30,12 @@
           profile
         </NuxtLink>
       </nav>
+      
+      <!-- Status Indicator -->
+      <div class="hidden lg:flex items-center gap-2 text-xs font-mono">
+        <div class="w-2 h-2 rounded-full" :class="connectionStatus.class"></div>
+        <span class="text-text-secondary">{{ connectionStatus.text }}</span>
+      </div>
       
       <!-- Mobile Navigation Toggle -->
       <button @click="toggleMenu" class="nav-toggle md:hidden">
@@ -61,14 +69,27 @@
         </NuxtLink>
       </div>
     </div>
+    
+    <!-- Progress Bar for Loading States -->
+    <div v-if="isLoading" class="nav-progress loading"></div>
   </header>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
-import ASCIIHeader from '../Branding/ASCIIHeader.vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 
 const isMenuOpen = ref(false)
+const isScrolled = ref(false)
+const isLoading = ref(false)
+const isConnected = ref(true)
+let eventSource: EventSource | null = null
+
+const connectionStatus = computed(() => {
+  if (isConnected.value) {
+    return { class: 'bg-success animate-pulse', text: 'connected' }
+  }
+  return { class: 'bg-error', text: 'disconnected' }
+})
 
 const toggleMenu = () => {
   isMenuOpen.value = !isMenuOpen.value
@@ -77,4 +98,48 @@ const toggleMenu = () => {
 const closeMenu = () => {
   isMenuOpen.value = false
 }
+
+const handleScroll = () => {
+  isScrolled.value = window.scrollY > 20
+}
+
+// Connect to SSE for real-time updates
+const connectSSE = () => {
+  const config = useRuntimeConfig()
+  eventSource = new EventSource(`${config.public.apiBase}/events`)
+  
+  eventSource.onopen = () => {
+    isConnected.value = true
+    console.log('SSE connected')
+  }
+  
+  eventSource.onerror = () => {
+    isConnected.value = false
+    console.error('SSE connection error')
+  }
+  
+  eventSource.onmessage = (event) => {
+    try {
+      const data = JSON.parse(event.data)
+      if (data.type === 'new_post') {
+        console.log('New post detected:', data.path)
+        // Trigger a notification or refresh
+      }
+    } catch (e) {
+      console.error('Failed to parse SSE message:', e)
+    }
+  }
+}
+
+onMounted(() => {
+  window.addEventListener('scroll', handleScroll)
+  connectSSE()
+})
+
+onUnmounted(() => {
+  window.removeEventListener('scroll', handleScroll)
+  if (eventSource) {
+    eventSource.close()
+  }
+})
 </script>

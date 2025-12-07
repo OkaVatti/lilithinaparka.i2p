@@ -278,6 +278,7 @@ func main() {
 	// Handlers
 	blogHandlers := handlers.NewBlogHandlers(db)
 	bskyHandlers := handlers.NewBskyHandlers(db)
+	profileHandlers := handlers.NewProfileHandlers(db)
 
 	// Blog routes
 	e.GET("/api/blog/posts", blogHandlers.GetAllPosts)
@@ -292,8 +293,12 @@ func main() {
 	e.POST("/api/bsky/refresh", bskyHandlers.RefreshPosts)
 
 	// Profile routes
-	e.GET("/api/profile", bskyHandlers.GetProfile)
+	e.GET("/api/profile", profileHandlers.GetProfile)
 	e.POST("/api/profile/refresh", bskyHandlers.RefreshProfile)
+	e.PUT("/api/profile", profileHandlers.UpdateProfile)
+
+	// SSE endpoint for real-time updates
+	e.GET("/api/events", sseServer.HandleSSE)
 
 	// Health check
 	e.GET("/api/health", func(c echo.Context) error {
@@ -302,10 +307,4 @@ func main() {
 			"time":   time.Now().Format(time.RFC3339),
 		})
 	})
-
-	// Start server
-	log.Println("Server starting on :8080")
-	if err := e.Start(":8080"); err != nil {
-		log.Fatalf("Failed to start server: %v", err)
-	}
 }
