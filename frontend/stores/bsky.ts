@@ -1,5 +1,5 @@
 import { defineStore } from "pinia";
-import type { BskyPost } from "../types";
+import type { BskyPost } from "~~/types";
 
 export const useBskyStore = defineStore("bsky", {
   state: () => ({
@@ -14,19 +14,29 @@ export const useBskyStore = defineStore("bsky", {
       this.error = null;
 
       try {
-        const config = useRuntimeConfig();
-        const response = await fetch(
-          `${config.public.apiBase}/bsky/posts?limit=${limit}`,
-        );
+        const { apiFetch } = useApi();
+        this.posts = await apiFetch<BskyPost[]>(`/bsky/posts?limit=${limit}`);
+      } catch (err) {
+        this.error = err instanceof Error
+          ? err.message
+          : "Failed to fetch BlueSky posts";
+      } finally {
+        this.loading = false;
+      }
+    },
 
-        if (!response.ok) {
-          throw new Error("Failed to fetch BlueSky posts");
-        }
+    async refreshPosts() {
+      this.loading = true;
+      this.error = null;
 
-        this.posts = await response.json();
-      } catch (e) {
-        this.error = e instanceof Error ? e.message : "Unknown error";
-        console.error("Error fetching BlueSky posts:", e);
+      try {
+        const { apiFetch } = useApi();
+        await apiFetch("/bsky/refresh", { method: "POST" });
+        await this.fetchPosts();
+      } catch (err) {
+        this.error = err instanceof Error
+          ? err.message
+          : "Failed to refresh posts";
       } finally {
         this.loading = false;
       }

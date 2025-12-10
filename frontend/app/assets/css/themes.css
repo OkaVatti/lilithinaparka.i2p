@@ -1,0 +1,73 @@
+/* Base theme variables */
+:root {
+  --theme-bg: var(--dracula-bg);
+  --theme-fg: var(--dracula-fg);
+  --theme-primary: var(--dracula-purple);
+  --theme-secondary: var(--dracula-pink);
+  --theme-accent: var(--dracula-cyan);
+  --theme-success: var(--dracula-green);
+  --theme-warning: var(--dracula-orange);
+  --theme-error: var(--dracula-red);
+  --theme-border: var(--dracula-current);
+  --theme-shadow: rgba(0, 0, 0, 0.3);
+}
+
+[data-theme="dracula"] {
+  --theme-bg: var(--dracula-bg);
+  --theme-fg: var(--dracula-fg);
+  --theme-primary: var(--dracula-purple);
+  --theme-secondary: var(--dracula-pink);
+  --theme-accent: var(--dracula-cyan);
+  --theme-success: var(--dracula-green);
+  --theme-warning: var(--dracula-orange);
+  --theme-error: var(--dracula-red);
+  --theme-border: var(--dracula-current);
+}
+
+[data-theme="nord"] {
+  --theme-bg: var(--nord-bg);
+  --theme-fg: var(--nord-fg);
+  --theme-primary: var(--nord-frost3);
+  --theme-secondary: var(--nord-frost2);
+  --theme-accent: var(--nord-frost1);
+  --theme-success: var(--nord-aurora-green);
+  --theme-warning: var(--nord-aurora-yellow);
+  --theme-error: var(--nord-aurora-red);
+  --theme-border: var(--nord-frost4);
+}
+
+[data-theme="gruvbox"] {
+  --theme-bg: var(--gruvbox-bg);
+  --theme-fg: var(--gruvbox-fg);
+  --theme-primary: var(--gruvbox-blue);
+  --theme-secondary: var(--gruvbox-purple);
+  --theme-accent: var(--gruvbox-aqua);
+  --theme-success: var(--gruvbox-green);
+  --theme-warning: var(--gruvbox-yellow);
+  --theme-error: var(--gruvbox-red);
+  --theme-border: var(--gruvbox-orange);
+}
+
+[data-theme="tokyo"] {
+  --theme-bg: var(--tokyo-bg);
+  --theme-fg: var(--tokyo-fg);
+  --theme-primary: var(--tokyo-blue);
+  --theme-secondary: var(--tokyo-magenta);
+  --theme-accent: var(--tokyo-cyan);
+  --theme-success: var(--tokyo-green);
+  --theme-warning: var(--tokyo-yellow);
+  --theme-error: var(--tokyo-red);
+  --theme-border: var(--tokyo-blue);
+}
+
+[data-theme="monokai"] {
+  --theme-bg: var(--monokai-bg);
+  --theme-fg: var(--monokai-fg);
+  --theme-primary: var(--monokai-purple);
+  --theme-secondary: var(--monokai-blue);
+  --theme-accent: var(--monokai-green);
+  --theme-success: var(--monokai-green);
+  --theme-warning: var(--monokai-yellow);
+  --theme-error: var(--monokai-red);
+  --theme-border: var(--monokai-orange);
+}

@@ -1,0 +1,59 @@
+:root {
+  /* Dracula (Default) */
+  --dracula-bg: #282a36;
+  --dracula-fg: #f8f8f2;
+  --dracula-current: #44475a;
+  --dracula-comment: #6272a4;
+  --dracula-cyan: #8be9fd;
+  --dracula-green: #50fa7b;
+  --dracula-orange: #ffb86c;
+  --dracula-pink: #ff79c6;
+  --dracula-purple: #bd93f9;
+  --dracula-red: #ff5555;
+  --dracula-yellow: #f1fa8c;
+
+  /* Nord */
+  --nord-bg: #2e3440;
+  --nord-fg: #eceff4;
+  --nord-frost1: #8fbcbb;
+  --nord-frost2: #88c0d0;
+  --nord-frost3: #81a1c1;
+  --nord-frost4: #5e81ac;
+  --nord-aurora-red: #bf616a;
+  --nord-aurora-orange: #d08770;
+  --nord-aurora-yellow: #ebcb8b;
+  --nord-aurora-green: #a3be8c;
+  --nord-aurora-purple: #b48ead;
+
+  /* Gruvbox */
+  --gruvbox-bg: #282828;
+  --gruvbox-fg: #ebdbb2;
+  --gruvbox-red: #cc241d;
+  --gruvbox-green: #98971a;
+  --gruvbox-yellow: #d79921;
+  --gruvbox-blue: #458588;
+  --gruvbox-purple: #b16286;
+  --gruvbox-aqua: #689d6a;
+  --gruvbox-orange: #d65d0e;
+
+  /* Tokyo Night */
+  --tokyo-bg: #1a1b26;
+  --tokyo-fg: #c0caf5;
+  --tokyo-blue: #7aa2f7;
+  --tokyo-cyan: #7dcfff;
+  --tokyo-green: #9ece6a;
+  --tokyo-magenta: #bb9af7;
+  --tokyo-orange: #ff9e64;
+  --tokyo-red: #f7768e;
+  --tokyo-yellow: #e0af68;
+
+  /* Monokai */
+  --monokai-bg: #272822;
+  --monokai-fg: #f8f8f2;
+  --monokai-red: #f92672;
+  --monokai-orange: #fd971f;
+  --monokai-yellow: #e6db74;
+  --monokai-green: #a6e22e;
+  --monokai-blue: #66d9ef;
+  --monokai-purple: #ae81ff;
+}

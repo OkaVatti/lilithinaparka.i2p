@@ -10,6 +10,7 @@
     "postinstall": "nuxt prepare"
   },
   "dependencies": {
+    "isomorphic-dompurify": "^2.34.0",
     "marked": "^17.0.1",
     "nuxt": "^4.2.1",
     "nuxt-feather-icons": "^1.2.5",
@@ -21,6 +22,7 @@
   "devDependencies": {
     "@tailwindcss/vite": "^4.1.17",
     "@types/node": "^24.2.0",
-    "tailwindcss": "^4.1.17"
+    "tailwindcss": "^4.1.17",
+    "vite-tsconfig-paths": "^5.1.4"
   }
 }

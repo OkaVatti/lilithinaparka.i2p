@@ -13,24 +13,32 @@ export default defineNuxtConfig({
     },
   },
 
-  css: ["./app/assets/css/main.css"],
+  css: [
+    './app/assets/css/system.css',
+    './app/assets/css/colors.css',
+    './app/assets/css/themes.css',
+    './app/assets/css/main.css'
+  ],
+
 
   app: {
     head: {
-      title: "Lilith Parker",
+      title: 'Lilith in a Parka',
       meta: [
-        { charset: "utf-8" },
-        { name: "viewport", content: "width=device-width, initial-scale=1" },
-        {
-          name: "description",
-          content:
-            "chronically online cat-girl who likes programming, music, and burritos",
-        },
+        { charset: 'utf-8' },
+        { name: 'viewport', content: 'width=device-width, initial-scale=1' },
+        { name: 'description', content: 'TUI-inspired blog and games portal' }
       ],
       link: [
-        { rel: "icon", type: "image/x-icon", href: "/favicon.ico" },
-      ],
-    },
+        { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }
+      ]
+    }
+  },
+  
+  ssr: true,
+  
+  experimental: {
+    payloadExtraction: false
   },
 
   nitro: {

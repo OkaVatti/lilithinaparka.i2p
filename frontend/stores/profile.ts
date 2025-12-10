@@ -1,5 +1,5 @@
 import { defineStore } from "pinia";
-import type { Profile } from "../types";
+import type { Profile } from "~~/types";
 
 export const useProfileStore = defineStore("profile", {
   state: () => ({
@@ -8,29 +8,6 @@ export const useProfileStore = defineStore("profile", {
     error: null as string | null,
   }),
 
-  actions: {
-    async fetchProfile() {
-      this.loading = true;
-      this.error = null;
-
-      try {
-        const config = useRuntimeConfig();
-        const response = await fetch(`${config.public.apiBase}/profile`);
-
-        if (!response.ok) {
-          throw new Error("Failed to fetch profile");
-        }
-
-        this.profile = await response.json();
-      } catch (e) {
-        this.error = e instanceof Error ? e.message : "Unknown error";
-        console.error("Error fetching profile:", e);
-      } finally {
-        this.loading = false;
-      }
-    },
-  },
-
   getters: {
     interests: (state) => {
       if (!state.profile?.interests) return [];
@@ -38,6 +15,41 @@ export const useProfileStore = defineStore("profile", {
         return JSON.parse(state.profile.interests);
       } catch {
         return [];
+      }
+    },
+  },
+
+  actions: {
+    async fetchProfile() {
+      this.loading = true;
+      this.error = null;
+
+      try {
+        const { apiFetch } = useApi();
+        this.profile = await apiFetch<Profile>("/profile");
+      } catch (err) {
+        this.error = err instanceof Error
+          ? err.message
+          : "Failed to fetch profile";
+      } finally {
+        this.loading = false;
+      }
+    },
+
+    async refreshProfile() {
+      this.loading = true;
+      this.error = null;
+
+      try {
+        const { apiFetch } = useApi();
+        await apiFetch("/profile/refresh", { method: "POST" });
+        await this.fetchProfile();
+      } catch (err) {
+        this.error = err instanceof Error
+          ? err.message
+          : "Failed to refresh profile";
+      } finally {
+        this.loading = false;
       }
     },
   },
