@@ -54,7 +54,7 @@ deno run preview
 
 ##### Backend
 
-```
+```text
 backend/
 ├── cmd/
 │   ├── server/         # Main server binary

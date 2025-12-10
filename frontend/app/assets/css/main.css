@@ -1,11 +1,11 @@
-@import './theme.css';
-@import './colours.css';
-@import './components/head.css';
-@import './components/nav.css';
-@import './components/foot.css';
-@import './components/blog.css';
-@import './components/bsky.css';
-@import './components/profile.css';
+@import "./theme.css";
+@import "./colours.css";
+@import "./components/head.css";
+@import "./components/nav.css";
+@import "./components/foot.css";
+@import "./components/blog.css";
+@import "./components/bsky.css";
+@import "./components/profile.css";
 
 * {
   margin: 0;
@@ -18,7 +18,7 @@ html {
 }
 
 body {
-  font-family: 'Courier New', monospace;
+  font-family: "Courier New", monospace;
   background-color: #0a0a0a;
   color: #e0e0e0;
   line-height: 1.6;
@@ -40,7 +40,7 @@ a {
   border: 1px solid #333333;
   padding: 1rem;
   background-color: #1a1a1a;
-  font-family: 'Courier New', monospace;
+  font-family: "Courier New", monospace;
 }
 
 .blink {
@@ -48,12 +48,16 @@ a {
 }
 
 @keyframes blink {
-  0%, 50% { opacity: 1; }
-  51%, 100% { opacity: 0; }
+  0%, 50% {
+    opacity: 1;
+  }
+  51%, 100% {
+    opacity: 0;
+  }
 }
 
 code {
-  font-family: 'Courier New', monospace;
+  font-family: "Courier New", monospace;
   background-color: #1a1a1a;
   padding: 0.2em 0.4em;
   border-radius: 3px;
@@ -118,9 +122,15 @@ th {
   font-weight: bold;
 }
 
-.prose h1 { font-size: 2em; }
-.prose h2 { font-size: 1.5em; }
-.prose h3 { font-size: 1.25em; }
+.prose h1 {
+  font-size: 2em;
+}
+.prose h2 {
+  font-size: 1.5em;
+}
+.prose h3 {
+  font-size: 1.25em;
+}
 
 .prose p {
   margin: 1em 0;

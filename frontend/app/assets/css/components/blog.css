@@ -13,7 +13,7 @@
   color: var(--accent);
   border: 1px solid var(--accent);
   font-size: 0.75rem;
-  font-family: 'Courier New', monospace;
+  font-family: "Courier New", monospace;
 }
 
 .blog-tag {

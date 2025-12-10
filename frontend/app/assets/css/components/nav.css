@@ -7,8 +7,8 @@
 
 /* Navigation Bar */
 .nav-bar {
-  @apply fixed top-0 left-0 right-0 border-b border-border bg-bg-primary/95 
-         backdrop-blur-lg shadow-lg transition-all duration-300;
+  @apply fixed top-0 left-0 right-0 border-b border-border bg-bg-primary/95
+    backdrop-blur-lg shadow-lg transition-all duration-300;
 }
 
 .nav-bar.scrolled {
@@ -22,8 +22,8 @@
 
 /* ASCII Art Logo */
 .ascii-logo {
-  @apply font-mono text-accent hover:text-text-primary transition-colors 
-         duration-300 cursor-pointer;
+  @apply font-mono text-accent hover:text-text-primary transition-colors
+    duration-300 cursor-pointer;
 }
 
 .ascii-logo pre {
@@ -42,8 +42,8 @@
 
 /* Navigation Links */
 .nav-link {
-  @apply relative px-2 py-1 text-text-secondary hover:text-accent 
-         transition-colors duration-200;
+  @apply relative px-2 py-1 text-text-secondary hover:text-accent
+    transition-colors duration-200;
 }
 
 .nav-link.active {
@@ -52,12 +52,12 @@
 
 .nav-link::before,
 .nav-link::after {
-  content: '[';
+  content: "[";
   @apply text-accent opacity-0 transition-opacity duration-200;
 }
 
 .nav-link::after {
-  content: ']';
+  content: "]";
 }
 
 .nav-link:hover::before,
@@ -77,19 +77,19 @@
 
 /* Terminal-like indicator for active link */
 .nav-link.active::before {
-  content: '$ ';
+  content: "$ ";
   @apply text-accent opacity-100 mr-1;
 }
 
 .nav-link.active::after {
-  content: '';
+  content: "";
   margin-left: 0;
 }
 
 /* Mobile Navigation Toggle */
 .nav-toggle {
-  @apply md:hidden p-2 text-text-secondary hover:text-accent 
-         transition-colors duration-200;
+  @apply md:hidden p-2 text-text-secondary hover:text-accent transition-colors
+    duration-200;
 }
 
 .nav-toggle-icon {
@@ -102,9 +102,8 @@
 
 /* Mobile Navigation Menu */
 .nav-mobile-menu {
-  @apply fixed inset-x-0 top-16 bg-bg-primary/95 backdrop-blur-lg 
-         border-b border-border shadow-lg md:hidden transition-all 
-         duration-300 ease-in-out;
+  @apply fixed inset-x-0 top-16 bg-bg-primary/95 backdrop-blur-lg border-b
+    border-border shadow-lg md:hidden transition-all duration-300 ease-in-out;
   max-height: 0;
   overflow: hidden;
 }
@@ -119,9 +118,9 @@
 }
 
 .nav-mobile-link {
-  @apply w-full text-center py-2 text-text-secondary hover:text-accent 
-         hover:bg-bg-secondary/50 transition-all duration-200 
-         rounded-lg font-mono text-base;
+  @apply w-full text-center py-2 text-text-secondary hover:text-accent
+    hover:bg-bg-secondary/50 transition-all duration-200 rounded-lg font-mono
+    text-base;
 }
 
 .nav-mobile-link.active {
@@ -130,14 +129,14 @@
 
 /* Navigation Breadcrumbs (for the list in Nav.vue) */
 .nav-breadcrumbs {
-  @apply flex flex-wrap gap-2 mt-4 px-4 py-3 bg-bg-secondary/50 
-         border border-border rounded-lg font-mono text-sm;
+  @apply flex flex-wrap gap-2 mt-4 px-4 py-3 bg-bg-secondary/50 border
+    border-border rounded-lg font-mono text-sm;
 }
 
 .nav-breadcrumb-item {
-  @apply px-3 py-1 text-text-secondary hover:text-accent 
-         hover:bg-bg-primary transition-colors duration-200 
-         rounded border border-transparent hover:border-accent/20;
+  @apply px-3 py-1 text-text-secondary hover:text-accent hover:bg-bg-primary
+    transition-colors duration-200 rounded border border-transparent
+    hover:border-accent/20;
 }
 
 .nav-breadcrumb-item.active {
@@ -150,8 +149,8 @@
 
 /* Navigation Command Line */
 .nav-command-line {
-  @apply mt-2 px-4 py-2 bg-bg-primary border border-border 
-         rounded font-mono text-xs text-text-secondary;
+  @apply mt-2 px-4 py-2 bg-bg-primary border border-border rounded font-mono
+    text-xs text-text-secondary;
 }
 
 .nav-command-prompt {
@@ -187,7 +186,7 @@
 }
 
 .nav-link:hover::after {
-  content: '▋';
+  content: "▋";
   @apply text-accent ml-1;
   animation: blink 1s infinite;
 }
@@ -198,11 +197,11 @@
     font-size: 0.6rem;
     line-height: 1.1;
   }
-  
+
   .nav-menu {
     gap: 2px;
   }
-  
+
   .nav-link {
     padding: 0.25rem 0.5rem;
     font-size: 0.875rem;
@@ -213,7 +212,7 @@
   .ascii-logo pre {
     font-size: 0.5rem;
   }
-  
+
   .nav-content {
     padding: 0.5rem;
   }
@@ -221,31 +220,49 @@
 
 /* Animations */
 @keyframes blink {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0; }
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
 }
 
 @keyframes glitch {
   0% {
-    text-shadow: 0.05em 0 0 var(--accent), -0.05em -0.025em 0 rgba(255, 0, 0, 0.75);
+    text-shadow:
+      0.05em 0 0 var(--accent),
+      -0.05em -0.025em 0 rgba(255, 0, 0, 0.75);
   }
   14% {
-    text-shadow: 0.05em 0 0 var(--accent), -0.05em -0.025em 0 rgba(255, 0, 0, 0.75);
+    text-shadow:
+      0.05em 0 0 var(--accent),
+      -0.05em -0.025em 0 rgba(255, 0, 0, 0.75);
   }
   15% {
-    text-shadow: -0.05em -0.025em 0 var(--accent), 0.025em 0.025em 0 rgba(0, 255, 0, 0.75);
+    text-shadow:
+      -0.05em -0.025em 0 var(--accent),
+      0.025em 0.025em 0 rgba(0, 255, 0, 0.75);
   }
   49% {
-    text-shadow: -0.05em -0.025em 0 var(--accent), 0.025em 0.025em 0 rgba(0, 255, 0, 0.75);
+    text-shadow:
+      -0.05em -0.025em 0 var(--accent),
+      0.025em 0.025em 0 rgba(0, 255, 0, 0.75);
   }
   50% {
-    text-shadow: 0.025em 0.05em 0 var(--accent), 0.05em 0 0 rgba(0, 0, 255, 0.75);
+    text-shadow:
+      0.025em 0.05em 0 var(--accent),
+      0.05em 0 0 rgba(0, 0, 255, 0.75);
   }
   99% {
-    text-shadow: 0.025em 0.05em 0 var(--accent), 0.05em 0 0 rgba(0, 0, 255, 0.75);
+    text-shadow:
+      0.025em 0.05em 0 var(--accent),
+      0.05em 0 0 rgba(0, 0, 255, 0.75);
   }
   100% {
-    text-shadow: -0.025em 0 0 var(--accent), -0.025em -0.025em 0 rgba(255, 0, 0, 0.75);
+    text-shadow:
+      -0.025em 0 0 var(--accent),
+      -0.025em -0.025em 0 rgba(255, 0, 0, 0.75);
   }
 }
 
@@ -282,9 +299,9 @@
 
 /* Navigation tooltips */
 .nav-tooltip {
-  @apply absolute z-50 px-3 py-2 text-xs font-mono bg-bg-secondary 
-         border border-accent/20 rounded-lg shadow-lg text-text-primary 
-         transition-opacity duration-200;
+  @apply absolute z-50 px-3 py-2 text-xs font-mono bg-bg-secondary border
+    border-accent/20 rounded-lg shadow-lg text-text-primary transition-opacity
+    duration-200;
   top: 100%;
   left: 50%;
   transform: translateX(-50%);
@@ -300,7 +317,8 @@
 
 /* Navigation progress indicator (for loading states) */
 .nav-progress {
-  @apply absolute bottom-0 left-0 h-0.5 bg-gradient-to-r from-accent to-purple-500;
+  @apply absolute bottom-0 left-0 h-0.5 bg-gradient-to-r from-accent
+    to-purple-500;
   width: 0%;
   transition: width 0.3s ease;
 }

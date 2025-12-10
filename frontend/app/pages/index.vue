@@ -2,85 +2,26 @@
 <template>
   <div class="home-page">
     <!-- Hero Section -->
-    <section class="hero-section mb-12">
+    <section class="hero-section mb-12 text-center">
       <div class="text-center">
-        <h1 class="text-4xl md:text-6xl font-bold text-accent mb-4 font-mono">
-          lilthinaparka.i2p
-        </h1>
+        <BrandingASCIIHeader class="text-4xl md:text-6xl font-bold text-accent mb-4 font-mono"/>
         <p class="text-xl text-text-secondary mb-8 font-mono">
           > personal blog-site + art gallery + portfolio + whatever i need it to be
         </p>
         
-        <div class="inline-block p-4 border border-accent/20 rounded-lg bg-bg-secondary/50">
-          <pre class="text-xs md:text-sm text-text-secondary font-mono">
-$ whoami
-name: Lilith Parker
-username: @lilithinaparka
-age: 20
-bio: "chronically online cat girl who likes programming, music, and burritos"
-location: "Earth, Sol System, Milky Way Galaxy"
-          </pre>
+        <div class=" justify-center p-4 border border-accent/20 rounded-lg bg-bg-secondary/50">
+          <ul class="text-xs md:text-sm text-text-secondary font-mono">
+            <li>$> whoami</li>
+            <li>name: Lilith Parker</li>
+            <li>username: @lilithinaparka</li>
+            <li>age: 20</li>
+            <li>bio: "chronically online cat girl who likes programming, music, and burritos"</li>
+            <li>location: "Earth, Sol System, Milky Way Galaxy"</li>
+          </ul>
         </div>
       </div>
     </section>
-    
-    <!-- Quick Stats -->
-    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-12">
-      <div class="stat-card">
-        <div class="stat-number">50+</div>
-        <div class="stat-label font-mono">Blog Posts</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-number">100+</div>
-        <div class="stat-label font-mono">Art Pieces</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-number">10+</div>
-        <div class="stat-label font-mono">Projects</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-number">5+</div>
-        <div class="stat-label font-mono">Games</div>
-      </div>
-    </div>
-    
-    <!-- Recent Content Sections -->
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-      <!-- Recent Blog Posts -->
-      <section class="content-section">
-        <h2 class="section-title">
-          <span class="text-accent">$</span> recent blog posts
-        </h2>
-        <div class="space-y-4">
-          <BlogPostCard
-            v-for="post in recentPosts"
-            :key="post.id"
-            :post="post"
-            class="hover:translate-x-2 transition-transform duration-200"
-          />
-        </div>
-        <NuxtLink to="/blog" class="section-link">
-          view all posts →
-        </NuxtLink>
-      </section>
       
-      <!-- Recent Art -->
-      <section class="content-section">
-        <h2 class="section-title">
-          <span class="text-accent">$</span> recent art
-        </h2>
-        <div class="grid grid-cols-2 gap-3">
-          <ArtCard
-            v-for="art in recentArt"
-            :key="art.id"
-            :art="art"
-            class="hover:scale-105 transition-transform duration-200"
-          />
-        </div>
-        <NuxtLink to="/gallery" class="section-link">
-          browse gallery →
-        </NuxtLink>
-      </section>
       
       <!-- Recent Bluesky Posts -->
       <section class="content-section">
@@ -99,24 +40,6 @@ location: "Earth, Sol System, Milky Way Galaxy"
         </NuxtLink>
       </section>
     </div>
-    
-    <!-- Featured Projects -->
-    <section class="mt-12 content-section">
-      <h2 class="section-title">
-        <span class="text-accent">$</span> featured projects
-      </h2>
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <ProjectCard
-          v-for="project in featuredProjects"
-          :key="project.id"
-          :project="project"
-          class="hover:-translate-y-1 transition-all duration-300"
-        />
-      </div>
-      <NuxtLink to="/projects" class="section-link">
-        view all projects →
-      </NuxtLink>
-    </section>
     
     <!-- Tech Stack -->
     <section class="mt-12 p-6 rounded-xl bg-bg-secondary/30 border border-accent/10">
