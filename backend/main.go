@@ -13,8 +13,10 @@ import (
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/okavatti/lilithinaparka.i2p/backend/m/v2/server/blog"
 	"github.com/okavatti/lilithinaparka.i2p/backend/m/v2/server/bsky"
+	"github.com/okavatti/lilithinaparka.i2p/backend/m/v2/server/games"
 	"github.com/okavatti/lilithinaparka.i2p/backend/m/v2/server/handlers"
 	"github.com/okavatti/lilithinaparka.i2p/backend/m/v2/server/models"
+
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 )
@@ -307,4 +309,48 @@ func main() {
 			"time":   time.Now().Format(time.RFC3339),
 		})
 	})
+
+	// After initializing other handlers, add:
+	searchHandlers := handlers.NewSearchHandlers(db)
+	analyticsHandlers := handlers.NewAnalyticsHandlers(db)
+	notificationHandlers := handlers.NewNotificationHandlers(db)
+	gameEngine := games.NewGameEngine(db)
+
+	// Add new routes after existing ones:
+
+	// Search routes
+	e.GET("/api/search", searchHandlers.Search)
+	e.GET("/api/search/autocomplete", searchHandlers.AutoComplete)
+	e.POST("/api/search/rebuild", searchHandlers.RebuildIndex, auth.RequireAuth(), auth.RequireAdmin())
+
+	// Analytics routes
+	e.POST("/api/analytics/track", analyticsHandlers.TrackEvent)
+	e.GET("/api/analytics/stats", analyticsHandlers.GetStats, auth.RequireAuth(), auth.RequireAdmin())
+	e.GET("/api/analytics/realtime", analyticsHandlers.GetRealtimeStats, auth.RequireAuth(), auth.RequireAdmin())
+	e.GET("/api/analytics/export", analyticsHandlers.ExportData, auth.RequireAuth(), auth.RequireAdmin())
+
+	// Notification routes
+	e.GET("/api/notifications", notificationHandlers.GetNotifications, auth.RequireAuth())
+	e.PUT("/api/notifications/:id/read", notificationHandlers.MarkAsRead, auth.RequireAuth())
+	e.DELETE("/api/notifications/:id", notificationHandlers.DeleteNotification, auth.RequireAuth())
+	e.GET("/api/notifications/preferences", notificationHandlers.GetPreferences, auth.RequireAuth())
+	e.PUT("/api/notifications/preferences", notificationHandlers.UpdatePreferences, auth.RequireAuth())
+	e.POST("/api/notifications/system", notificationHandlers.SendSystemNotification, auth.RequireAuth(), auth.RequireAdmin())
+
+	// Enhanced game routes for multiplayer
+	e.POST("/api/games/sessions", func(c echo.Context) error {
+		// Create multiplayer session
+		// Implementation would use gameEngine
+	}, auth.RequireAuth())
+	e.POST("/api/games/sessions/:id/join", func(c echo.Context) error {
+		// Join multiplayer session
+	}, auth.RequireAuth())
+	e.POST("/api/games/sessions/:id/action", func(c echo.Context) error {
+		// Perform game action
+	}, auth.RequireAuth())
+
+	// WebSocket for real-time game updates
+	e.GET("/api/games/ws", func(c echo.Context) error {
+		// WebSocket handler for real-time game updates
+	}, auth.RequireAuth())
 }
