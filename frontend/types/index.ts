@@ -118,3 +118,59 @@ export interface GameMetadata {
   instructions: string;
   controls: Record<string, string>;
 }
+
+export interface Notification {
+  id: number;
+  user_id: number;
+  type: 'info' | 'success' | 'warning' | 'error';
+  title: string;
+  message: string;
+  read: boolean;
+  action_url?: string;
+  data?: string;
+  expires_at?: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface NotificationPreferences {
+  id: number;
+  user_id: number;
+  email_enabled: boolean;
+  push_enabled: boolean;
+  in_app_enabled: boolean;
+  notify_on_comment: boolean;
+  notify_on_like: boolean;
+  notify_on_follow: boolean;
+  notify_on_post: boolean;
+  quiet_hours_start?: string;
+  quiet_hours_end?: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface AnalyticsEvent {
+  id: number;
+  session_id: string;
+  event_type: string;
+  page: string;
+  referrer: string;
+  user_agent: string;
+  ip_hash: string;
+  data: string;
+  created_at: string;
+}
+
+export interface DailyStats {
+  id: number;
+  date: string;
+  page_views: number;
+  visitors: number;
+  sessions: number;
+  blog_views: number;
+  game_plays: number;
+  media_views: number;
+  data: string;
+  created_at: string;
+  updated_at: string;
+}

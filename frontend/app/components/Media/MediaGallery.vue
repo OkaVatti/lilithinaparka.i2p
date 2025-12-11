@@ -96,7 +96,7 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
-import { useApi } from '~~/composables/useApi'
+import { useApi } from '~/composables/useApi'
 
 interface MediaItem {
   id: number

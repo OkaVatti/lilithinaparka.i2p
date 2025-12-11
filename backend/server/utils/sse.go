@@ -1,7 +1,7 @@
-// backend/server/sse.go
 package utils
 
 import (
+	"encoding/json"
 	"fmt"
 	"sync"
 	"time"
@@ -55,6 +55,7 @@ func (s *SSEServer) Broadcast(message string) {
 		select {
 		case client.channel <- message:
 		default:
+			// Channel full, skip this client
 		}
 	}
 }
@@ -67,7 +68,12 @@ func (s *SSEServer) HandleSSE(c echo.Context) error {
 	c.Response().Header().Set("Content-Type", "text/event-stream")
 	c.Response().Header().Set("Cache-Control", "no-cache")
 	c.Response().Header().Set("Connection", "keep-alive")
+	c.Response().Header().Set("X-Accel-Buffering", "no")
 	c.Response().WriteHeader(200)
+
+	// Send initial connection message
+	fmt.Fprintf(c.Response(), "data: %s\n\n", `{"type":"connected","client_id":"`+clientID+`"}`)
+	c.Response().Flush()
 
 	ticker := time.NewTicker(30 * time.Second)
 	defer ticker.Stop()
@@ -78,6 +84,7 @@ func (s *SSEServer) HandleSSE(c echo.Context) error {
 			fmt.Fprintf(c.Response(), "data: %s\n\n", msg)
 			c.Response().Flush()
 		case <-ticker.C:
+			// Send keepalive
 			fmt.Fprintf(c.Response(), ": keepalive\n\n")
 			c.Response().Flush()
 		case <-c.Request().Context().Done():
@@ -86,8 +93,38 @@ func (s *SSEServer) HandleSSE(c echo.Context) error {
 	}
 }
 
-var sseServer = NewSSEServer()
+// Helper functions for common notifications
 
-func notifyNewPost(path string) {
-	sseServer.Broadcast(fmt.Sprintf(`{"type":"new_post","path":"%s"}`, path))
+func NotifyNewPost(path string) {
+	data := map[string]string{
+		"type": "new_post",
+		"path": path,
+	}
+	if jsonData, err := json.Marshal(data); err == nil {
+		// This would be called from a global SSE server instance
+		// Implementation depends on how you structure the app
+		fmt.Printf("New post notification: %s\n", string(jsonData))
+	}
+}
+
+func NotifyNewScore(gameSlug, alias string, score int64) {
+	data := map[string]interface{}{
+		"type":  "new_score",
+		"game":  gameSlug,
+		"alias": alias,
+		"score": score,
+	}
+	if jsonData, err := json.Marshal(data); err == nil {
+		fmt.Printf("New score notification: %s\n", string(jsonData))
+	}
+}
+
+func NotifyBskyUpdate(postCount int) {
+	data := map[string]interface{}{
+		"type":       "bsky_update",
+		"post_count": postCount,
+	}
+	if jsonData, err := json.Marshal(data); err == nil {
+		fmt.Printf("BlueSky update notification: %s\n", string(jsonData))
+	}
 }

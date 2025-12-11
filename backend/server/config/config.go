@@ -1,6 +1,7 @@
 package config
 
 import (
+	"log"
 	"os"
 	"strconv"
 
@@ -40,7 +41,9 @@ type Config struct {
 
 func LoadConfig() *Config {
 	// Load .env file if exists
-	godotenv.Load()
+	if err := godotenv.Load(); err != nil {
+		log.Println("No .env file found, using environment variables")
+	}
 
 	var config Config
 
@@ -54,9 +57,9 @@ func LoadConfig() *Config {
 	// Security configuration
 	config.Security.JWTSecret = getEnv("JWT_SECRET", "your-secret-key-change-this")
 	config.Security.CORSOrigins = []string{
-		"http://localhost:3000",
-		"https://localhost:3000",
-		"http://127.0.0.1:3000",
+		getEnv("CORS_ORIGIN_1", "http://localhost:3000"),
+		getEnv("CORS_ORIGIN_2", "https://localhost:3000"),
+		getEnv("CORS_ORIGIN_3", "http://127.0.0.1:3000"),
 	}
 	config.Security.RateLimit = getEnvAsInt("RATE_LIMIT", 100)
 	config.Security.RateLimitBurst = getEnvAsInt("RATE_LIMIT_BURST", 30)

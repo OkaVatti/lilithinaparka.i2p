@@ -8,11 +8,6 @@ import (
 	"strings"
 )
 
-// ensure creates a dir if missing
-func ensure(path string) error {
-	return os.MkdirAll(path, 0o755)
-}
-
 func fileExists(path string) bool {
 	_, err := os.Stat(path)
 	return err == nil
@@ -28,17 +23,6 @@ func writeFileAtomic(path string, content []byte) error {
 		return err
 	}
 	return os.Rename(tmp, path)
-}
-
-func slugFromFilename(name string) string {
-	n := strings.TrimSuffix(name, filepath.Ext(name))
-	n = strings.ToLower(strings.ReplaceAll(n, " ", "-"))
-	n = strings.ReplaceAll(n, "_", "-")
-	return n
-}
-
-func joinTags(slice []string) string {
-	return strings.Join(slice, ",")
 }
 
 func splitTags(s string) []string {

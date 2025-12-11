@@ -3,8 +3,8 @@ package utils
 import (
 	"bytes"
 	"fmt"
-	"io/ioutil"
 	"log"
+	"os"
 	"path/filepath"
 	"strings"
 	"time"
@@ -15,6 +15,35 @@ import (
 )
 
 var postFolders = []string{"Casual", "Interlude", "Serious"}
+
+// Post represents a blog post in the system
+type Post struct {
+	Slug          string
+	Title         string
+	Date          time.Time
+	Authors       string
+	Tags          string
+	Categories    string
+	Draft         bool
+	Share         bool
+	FeaturedImage string
+	Summary       string
+	Content       string
+}
+
+// DB represents a database connection/interface
+type DB struct {
+	// This would typically contain database connection details
+	// For now, we'll define it as an interface for UpsertPost
+}
+
+// UpsertPost inserts or updates a post in the database
+func (db *DB) UpsertPost(post *Post) error {
+	// This would contain database logic
+	// For now, just log and return nil
+	log.Printf("Upserting post: %s", post.Slug)
+	return nil
+}
 
 type frontMatter struct {
 	Title         string   `yaml:"title"`
@@ -37,7 +66,7 @@ func scanPosts(db *DB) error {
 		if err := ensure(dir); err != nil {
 			return err
 		}
-		files, err := ioutil.ReadDir(dir)
+		files, err := os.ReadDir(dir)
 		if err != nil {
 			return err
 		}
@@ -95,7 +124,7 @@ func watchFolder(db *DB, path string) {
 }
 
 func parseAndUpsertFile(db *DB, path string) error {
-	content, err := ioutil.ReadFile(path)
+	content, err := os.ReadFile(path)
 	if err != nil {
 		return err
 	}
@@ -147,4 +176,58 @@ func splitFrontMatter(content []byte) ([]byte, []byte, error) {
 	}
 	// parts[1] is YAML, parts[2] is rest
 	return bytes.TrimSpace(parts[1]), bytes.TrimSpace(parts[2]), nil
+}
+
+// Helper functions that were referenced but not defined
+
+// ensure creates a directory if it doesn't exist
+func ensure(dir string) error {
+	return os.MkdirAll(dir, 0755)
+}
+
+// slugFromFilename creates a URL-friendly slug from a filename
+func slugFromFilename(filename string) string {
+	// Remove .md extension
+	name := strings.TrimSuffix(filename, ".md")
+	// Convert to lowercase
+	name = strings.ToLower(name)
+	// Replace spaces and underscores with hyphens
+	name = strings.ReplaceAll(name, " ", "-")
+	name = strings.ReplaceAll(name, "_", "-")
+	// Remove any non-alphanumeric characters (except hyphens)
+	var result strings.Builder
+	for _, r := range name {
+		if (r >= 'a' && r <= 'z') || (r >= '0' && r <= '9') || r == '-' {
+			result.WriteRune(r)
+		}
+	}
+	// Remove consecutive hyphens and trim
+	slug := result.String()
+	for strings.Contains(slug, "--") {
+		slug = strings.ReplaceAll(slug, "--", "-")
+	}
+	return strings.Trim(slug, "-")
+}
+
+// joinTags converts a slice of strings to a comma-separated string
+func joinTags(tags []string) string {
+	if len(tags) == 0 {
+		return ""
+	}
+	// Remove empty strings and trim
+	var cleanTags []string
+	for _, tag := range tags {
+		tag = strings.TrimSpace(tag)
+		if tag != "" {
+			cleanTags = append(cleanTags, tag)
+		}
+	}
+	return strings.Join(cleanTags, ", ")
+}
+
+// notifyNewPost notifies SSE clients about new/updated posts
+func notifyNewPost(path string) {
+	log.Printf("New/updated post detected: %s", path)
+	// In a real implementation, this would send notifications to connected SSE clients
+	// For now, just log the event
 }

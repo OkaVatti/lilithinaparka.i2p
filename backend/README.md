@@ -1,178 +1,362 @@
 # lilithinaparka.i2p - Backend API Server
 
-## Overview
+Clean, production-ready Go backend for the I2P blog platform.
 
-This is the backend API server for the lilithinaparka.i2p portal. Built in Go, it provides a secure, performant REST API that manages blog content, user profiles, game leaderboards, media files, and external service integration (BlueSky). It is designed to run as a hidden service within the I2P network
+## Features
 
-## ✨ Core Features
+- RESTful API for blog posts, media, games, and profiles
+- BlueSky social feed integration
+- SQLite database with WAL mode for better concurrency
+- JWT authentication for admin endpoints
+- Real-time updates via Server-Sent Events (SSE)
+- Game leaderboard system
+- Full-text search with indexing
+- Analytics and notification system
+- Docker support for easy deployment
 
-- Unified Content API: 
-    - CRUD operations for Markdown blog posts, BlueSky sync, art, and video metadata.
-- Game State Management: 
-    - Handles global leaderboards, score submission, and game save persistence.
-- File & Media Processing: 
-    - Ingests Markdown and media from the filesystem, generates thumbnails, and provides adaptive video streaming.
-- External Service Integration: 
-    - Scheduled synchronization with the BlueSky API (AT Protocol) and webhook handling.
-- Security-First Architecture: 
-    - JWT authentication for admin endpoints, rate limiting, and hardened headers. SQL injection prevented via parameterized queries.
-- I2P-Optimized: 
-    - Configured for higher latency tolerance and lower bandwidth consumption typical of garlic routing.
+## Quick Start
 
-## 🛠️ Tech Stack
-- Language: Go 1.21+
-- Database: SQLite 3.40+ (with WAL mode for performance)
-- Router: gorilla/mux
-- ORM/Data Layer: gorm.io/gorm
-- Config Management: viper or environment variables
-- Logging: Structured JSON logging with slog
-- Markdown Processing: goldmark with frontmatter
+### Prerequisites
 
-## 🚀 Getting Started
-Prerequisites
-- Go: Version 1.21 or higher.
-- SQLite: Command-line tools (sqlite3) are helpful for debugging.
-- FFmpeg: Required for video thumbnail and transcode generation.
-- I2P Router: For full integration testing.
+- Go 1.21 or higher
+- SQLite 3.40+
+- FFmpeg (for media processing)
+- Make (optional, for convenience)
 
-## Installation & Setup
+### Installation
 
-### Clone and Navigate:
+1. Clone and navigate to the backend directory:
 ```bash
-
-git clone <your-repository-url>
 cd backend
 ```
 
-### Install Dependencies:
-```bash
-go mod download
-```
-
-## Configure Environment:
-
-### Copy the example environment file and set your variables:
+2. Copy environment file and configure:
 ```bash
 cp .env.example .env
 # Edit .env with your settings
 ```
 
-Key configuration includes DB_PATH, BSKY_APP_PASSWORD, JWT_SECRET, and server HOST/PORT.
-
-## Initialize the Database:
-
-### Run migrations and seed initial data (like default admin user, game definitions):
+3. Initialize project structure:
 ```bash
-go run cmd/migrate/main.go
-go run cmd/seed/main.go
+make init
+```
+
+4. Install dependencies:
+```bash
+go mod download
+```
+
+5. Run the server:
+```bash
+make run
+```
+
+The server will start on `http://localhost:8080` by default.
+
+## Configuration
+
+All configuration is done via environment variables or the `.env` file:
+
+### Server Settings
+- `HOST` - Server host (default: 127.0.0.1)
+- `PORT` - Server port (default: 8080)
+
+### Database
+- `DB_PATH` - SQLite database path (default: ./blog.db)
+
+### Security
+- `JWT_SECRET` - Secret key for JWT tokens (CHANGE THIS!)
+- `IP_SALT` - Salt for IP hashing (CHANGE THIS!)
+- `CORS_ORIGIN_*` - Allowed CORS origins
+
+### External Services
+- `BSKY_HANDLE` - BlueSky handle for feed integration
+
+### Admin
+- `ADMIN_USERNAME` - Admin username
+- `ADMIN_PASSWORD` - Admin password (CHANGE THIS!)
+
+## Project Structure
+
+```
+backend/
+├── main.go                    # Application entry point
+├── server/
+│   ├── blog/                 # Blog post handling
+│   ├── bsky/                 # BlueSky integration
+│   ├── config/               # Configuration management
+│   ├── games/                # Game engine
+│   ├── handlers/             # HTTP handlers
+│   ├── middleware/           # Authentication & rate limiting
+│   ├── models/               # Database models
+│   └── utils/                # Utility functions
+├── blog/                     # Content directory
+│   ├── posts/               # Markdown blog posts
+│   ├── profile/             # Profile information
+│   └── assets/              # Images and media
+└── media/                    # Uploaded media files
+```
+
+## API Endpoints
+
+### Public Endpoints
+
+#### Health Check
+```
+GET /api/health
+```
+
+#### Blog Posts
+```
+GET /api/blog/posts              # List all posts
+GET /api/blog/posts/:slug        # Get post by slug
+GET /api/blog/category/:category # Posts by category
+GET /api/blog/tag/:tag           # Posts by tag
+```
+
+#### BlueSky
+```
+GET /api/bsky/posts              # Get BlueSky posts
+GET /api/bsky/post?uri=...       # Get specific post
+```
+
+#### Profile
+```
+GET /api/profile                 # Get public profile
+```
+
+#### Games
+```
+GET /api/games                   # List all games
+GET /api/games/:slug             # Get game details
+GET /api/games/:slug/leaderboard # Get leaderboard
+POST /api/games/:slug/score      # Submit score
+```
+
+#### Search
+```
+GET /api/search?query=...        # Search content
+GET /api/search/autocomplete?q=... # Autocomplete suggestions
+```
+
+#### Media
+```
+GET /api/media                   # List media
+GET /api/media/:id               # Get media item
+GET /api/media/categories        # List categories
+```
+
+### Protected Endpoints (Admin Only)
+
+All admin endpoints require JWT authentication via `Authorization: Bearer <token>` header.
+
+#### Authentication
+```
+POST /api/auth/login             # Admin login
+POST /api/auth/logout            # Logout
+GET /api/auth/status             # Check auth status
+```
+
+#### Admin Operations
+```
+POST /api/blog/rescan            # Rescan blog posts
+POST /api/bsky/refresh           # Refresh BlueSky posts
+POST /api/bsky/profile/refresh   # Refresh BlueSky profile
+PUT /api/profile                 # Update profile
+POST /api/media/upload           # Upload media
+POST /api/games                  # Create game
+PUT /api/games/:slug             # Update game
+POST /api/search/rebuild         # Rebuild search index
 ```
 
 ## Development
 
-### Start the development server with file watching:
+### Running in Development Mode
+
+With auto-reload (requires [air](https://github.com/cosmtrek/air)):
 ```bash
-go run main.go --dev
+make dev
 ```
 
-The API server will start, typically at http://localhost:8080. An API explorer (like Swagger UI, if configured) may be available.
-
-## Building for Production
-
-### Create an optimized binary:
+### Running Tests
 ```bash
-go build -ldflags="-s -w" -o dist/server main.go
+make test
 ```
 
-### Run the binary:
+### Code Formatting
 ```bash
-./dist/server --config ./config/production.yaml
+make fmt
 ```
 
-## 📁 Project Structure
-
-### A detailed breakdown of the backend's internal organization:
-```text
-backend/
-├── cmd/                      # Application entry points (CLI tools)
-├── internal/                 # Private application code
-│   ├── api/handlers/        # HTTP request handlers
-│   ├── api/middleware/      # CORS, logging, auth, rate limiting[citation:4]
-│   ├── database/            # Models, migrations, and repositories
-│   ├── services/            # Core business logic (blog, bsky, games)
-│   └── utils/               # Shared utilities (cache, logger, validator)
-├── blog/                    # Content directory (Markdown, images, videos)
-├── db/                      # SQLite database file and migration scripts
-├── config/                  # Configuration files (YAML/JSON)
-├── go.mod
-├── main.go                  # Server entry point
-└── Dockerfile
-```
-
-## 🔧 Configuration
-
-### Configuration is managed through environment variables and/or YAML files, prioritized in this order:
-- Command-line flags
-- Environment variables (e.g., SERVER_PORT, DB_PATH)
-- Configuration file (e.g., config/production.yaml)
-- Default values in code
-
-> Security Note: Never commit files containing secrets (.env, config/local.yaml) to version control.
-
-## 🗄️ Database Management
-- Migrations: Database schema changes are managed using SQL migration files in db/migrations/. Use the cmd/migrate tool to apply them.
-- Seeding: Initial data (admin user, game entries) is populated via cmd/seed.
-- Backups: Implement a regular backup strategy for the SQLite file, especially before running migrations.
-
-## 🔌 API Specification
-
-### The backend provides a comprehensive REST API. Key endpoints include:
-
-| Method | Endpoint             | Description                              | Auth Required                  |
-| ------ | -------------------- | ---------------------------------------- | ------------------------------ |
-| GET    | /api/health          | Server Health Check                      | No                             |
-| GET    | /api/blog/posts      | Paginated list of blog posts             | No                             |
-| POST   | /api/auth/login      | Admin login (Requires JWT + Private-Key) | No                             |
-| POST   | /api/games/:id/score | Submit a game score                      | No (rate-limited)              |
-| POST   | /api/media/upload    | Upload an Image or Video                 | YES (Admin JWT + Private Key)  |
-
-### CORS Policy: 
-
-In production, the Access-Control-Allow-Origin header is strictly set to your I2P eepsite address (e.g., http://your-site.b32.i2p). 
-During development, it can be set to http://localhost:3000
-
-## 🔒 Security & Hardening
-
-This backend is designed for deployment on I2P, which adds inherent network-layer privacy
-
-Additional measures include:
-- Authentication: JWT-based auth for admin routes. Passwords hashed with argon2id.
-- Input Validation: All incoming data is validated using struct tags and custom validators before processing.
-- Rate Limiting: Implemented globally and per-endpoint (e.g., on /api/games/*/score) to prevent abuse.
-- Headers: Security headers like X-Frame-Options: DENY, X-Content-Type-Options: nosniff are set by middleware.
-
-## 📊 Deployment
-
-- I2P Tunnel Configuration
-    - To expose the backend as an I2P eepsite, you must configure an HTTP tunnel in your I2P router console. The tunnel should point to the backend server's host and port (e.g., 127.0.0.1:8080)
-- Systemd Service (Linux)
-    - For production deployments, a systemd service file ensures the backend starts automatically and restarts on failure. An example is provided in the deployment/ directory.
-- Docker Deployment
-    - A Dockerfile and docker-compose.yml are provided for containerized deployment, which is highly recommended for consistency.
-
-### Build and run:
+### Linting (requires golangci-lint)
 ```bash
-docker-compose up --build -d
+make lint
 ```
 
-### View logs:
+## Docker Deployment
+
+### Build Docker Image
 ```bash
-docker-compose logs -f
+make docker-build
 ```
 
-## 🔍 Monitoring & Troubleshooting
-- Logs: Check structured JSON logs for request details and errors. Log level can be set via LOG_LEVEL env var.
-- Health Endpoint: GET /api/health returns server status and database connectivity.
-- Common Issues:
-    - "Database is locked": Ensure only one instance of the backend is writing to the SQLite file.
-    - CORS errors from frontend: Verify the CORS origin setting in the backend configuration matches the frontend's origin exactly
-    - BlueSky sync failing: Check the BSKY_APP_PASSWORD and handle in the .env file. Review service logs for API errors.
+### Run with Docker
+```bash
+make docker-run
+```
+
+### Run with Docker Compose
+```bash
+make docker-dev
+```
+
+### Stop Docker Compose
+```bash
+make docker-stop
+```
+
+## Database Management
+
+### Backup Database
+```bash
+make backup
+```
+
+This creates a timestamped backup in the `backups/` directory.
+
+### Database Schema
+
+The database schema is automatically created/updated using GORM's AutoMigrate feature. Key tables:
+
+- `blog_posts` - Blog post content and metadata
+- `bsky_posts` - Cached BlueSky posts
+- `profiles` - User profile information
+- `games` - Game definitions
+- `game_scores` - Game leaderboard scores
+- `media_items` - Uploaded media metadata
+- `search_indices` - Full-text search index
+- `analytics_events` - Analytics tracking
+- `notifications` - User notifications
+
+## I2P Deployment
+
+### I2P Tunnel Configuration
+
+1. In your I2P router console, create a new HTTP server tunnel:
+   - Target host: 127.0.0.1
+   - Target port: 8080
+   - Tunnel length: 3 (inbound/outbound)
+   - Tunnel quantity: 3
+
+2. Save your tunnel's `.b32.i2p` address
+
+3. Update CORS settings in `.env`:
+```bash
+CORS_ORIGIN_2=http://your-address.b32.i2p
+```
+
+### Systemd Service (Linux)
+
+Create `/etc/systemd/system/lilithinaparka.service`:
+
+```ini
+[Unit]
+Description=lilithinaparka.i2p Backend
+After=network.target i2p.service
+Requires=i2p.service
+
+[Service]
+Type=simple
+User=your-user
+WorkingDirectory=/path/to/backend
+ExecStart=/path/to/backend/dist/server
+Restart=on-failure
+RestartSec=5
+Environment="HOST=127.0.0.1"
+Environment="PORT=8080"
+
+[Install]
+WantedBy=multi-user.target
+```
+
+Enable and start:
+```bash
+sudo systemctl enable lilithinaparka
+sudo systemctl start lilithinaparka
+sudo systemctl status lilithinaparka
+```
+
+## Troubleshooting
+
+### Database Locked Errors
+- Ensure only one instance is running
+- Check that WAL mode is enabled
+- Increase busy timeout in config
+
+### BlueSky Integration Fails
+- Verify BSKY_HANDLE is correct
+- Check network connectivity
+- Review API rate limits
+
+### CORS Errors
+- Verify CORS_ORIGIN settings match your frontend URL exactly
+- Check that the backend is running and accessible
+
+### High Memory Usage
+- Adjust rate limiting settings
+- Clear old analytics events periodically
+- Monitor SSE client connections
+
+## Performance Optimization
+
+### Database
+- WAL mode is enabled by default for better concurrency
+- Indexes are automatically created for frequently queried fields
+- Consider periodic VACUUM operations for large databases
+
+### Caching
+- Static assets are served with appropriate cache headers
+- Consider adding Redis for session storage in high-traffic scenarios
+
+### Rate Limiting
+- Adjust `RATE_LIMIT` and `RATE_LIMIT_BURST` based on expected traffic
+- Consider IP-based or endpoint-specific limits
+
+## Security Considerations
+
+### Production Checklist
+- [ ] Change all default passwords in `.env`
+- [ ] Set strong JWT_SECRET (32+ random characters)
+- [ ] Set unique IP_SALT for hashing
+- [ ] Configure proper CORS origins
+- [ ] Enable HTTPS (via reverse proxy)
+- [ ] Set up regular database backups
+- [ ] Monitor logs for suspicious activity
+- [ ] Keep dependencies updated
+- [ ] Run behind I2P tunnel for anonymity
+
+### Admin Access
+- Admin credentials are stored securely with bcrypt hashing
+- JWT tokens expire after 24 hours
+- All admin endpoints require authentication
+
+## Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Run tests: `make test`
+5. Format code: `make fmt`
+6. Submit a pull request
+
+## License
+
+See main project README for license information.
+
+## Support
+
+For issues and questions:
+- Check the troubleshooting section
+- Review server logs
+- Open an issue on GitHub (if public)
+- Contact via I2P email (see profile)

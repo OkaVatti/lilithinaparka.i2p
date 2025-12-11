@@ -10,6 +10,7 @@ import (
 
 	"github.com/labstack/echo/v4"
 	"github.com/okavatti/lilithinaparka.i2p/backend/m/v2/server/models"
+	"github.com/okavatti/lilithinaparka.i2p/backend/m/v2/server/utils"
 	"gorm.io/gorm"
 )
 
@@ -61,13 +62,6 @@ func (h *GameHandlers) GetGameBySlug(c echo.Context) error {
 		return c.JSON(http.StatusInternalServerError, map[string]string{
 			"error": "Failed to fetch game",
 		})
-	}
-
-	// Parse config if exists
-	var config GameConfig
-	if game.Config != "" {
-		json.Unmarshal([]byte(game.Config), &config)
-		game.Config = string(json.RawMessage(game.Config))
 	}
 
 	return c.JSON(http.StatusOK, game)
@@ -124,6 +118,23 @@ func (h *GameHandlers) SubmitScore(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, map[string]string{
 			"error": "Invalid request",
 		})
+	}
+
+	// Basic validation
+	if req.Alias == "" || len(req.Alias) > 20 {
+		return c.JSON(http.StatusBadRequest, map[string]string{
+			"error": "Alias must be between 1 and 20 characters",
+		})
+	}
+
+	if req.Score < 0 {
+		return c.JSON(http.StatusBadRequest, map[string]string{
+			"error": "Score cannot be negative",
+		})
+	}
+
+	if req.Level < 1 {
+		req.Level = 1
 	}
 
 	ipHash := hashIP(c.RealIP())
@@ -187,6 +198,13 @@ func (h *GameHandlers) AdminCreateGame(c echo.Context) error {
 		})
 	}
 
+	// Validate required fields
+	if game.Slug == "" || game.Name == "" || game.Category == "" {
+		return c.JSON(http.StatusBadRequest, map[string]string{
+			"error": "Slug, name, and category are required",
+		})
+	}
+
 	if err := h.DB.Create(&game).Error; err != nil {
 		return c.JSON(http.StatusInternalServerError, map[string]string{
 			"error": "Failed to create game",
@@ -224,6 +242,10 @@ func (h *GameHandlers) AdminUpdateGame(c echo.Context) error {
 }
 
 func hashIP(ip string) string {
-	hash := sha256.Sum256([]byte(ip + os.Getenv("IP_SALT")))
+	salt := os.Getenv("IP_SALT")
+	if salt == "" {
+		salt = "default-salt-change-this"
+	}
+	hash := sha256.Sum256([]byte(ip + salt))
 	return hex.EncodeToString(hash[:])
 }

@@ -1,0 +1,53 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: lilithinaparka-backend
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    environment:
+      - HOST=0.0.0.0
+      - PORT=8080
+      - DB_PATH=/app/blog.db
+      - JWT_SECRET=${JWT_SECRET:-your-secret-key}
+      - BSKY_HANDLE=${BSKY_HANDLE:-lilithinaparka.bsky.social}
+      - ADMIN_USERNAME=${ADMIN_USERNAME:-admin}
+      - ADMIN_PASSWORD=${ADMIN_PASSWORD:-admin123}
+    volumes:
+      - ./blog:/app/blog
+      - ./media:/app/media
+      - ./blog.db:/app/blog.db
+    networks:
+      - lilithinaparka-network
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8080/api/health"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+      start_period: 10s
+
+  # Optional: Add a reverse proxy for I2P integration
+  # nginx:
+  #   image: nginx:alpine
+  #   container_name: lilithinaparka-nginx
+  #   restart: unless-stopped
+  #   ports:
+  #     - "80:80"
+  #   volumes:
+  #     - ./nginx.conf:/etc/nginx/nginx.conf:ro
+  #   depends_on:
+  #     - backend
+  #   networks:
+  #     - lilithinaparka-network
+
+networks:
+  lilithinaparka-network:
+    driver: bridge
+
+volumes:
+  blog_data:
+  media_data:
