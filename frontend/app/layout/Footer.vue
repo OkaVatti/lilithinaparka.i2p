@@ -36,7 +36,7 @@
 </template>
 
 <script setup lang="ts">
-import { useProfileStore } from '~~/stores/profile'
+import { useProfileStore } from '~/pages/profile/profile'
 
 const profileStore = useProfileStore()
 </script>

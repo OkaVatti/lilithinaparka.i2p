@@ -77,7 +77,6 @@ func (ge *GameEngine) CreateDiceGame(sessionID string, players []string) (*DiceG
 		RollsLeft:     3,
 	}
 
-	// Initialize scores
 	for _, player := range players {
 		game.Scores[player] = 0
 	}
@@ -94,7 +93,6 @@ func (dg *DiceGame) RollDice(keep []bool) ([]int, error) {
 		return nil, fmt.Errorf("no rolls left")
 	}
 
-	// Roll dice that aren't kept
 	for i := range dg.Dice {
 		if !keep[i] {
 			dg.Dice[i] = rand.Intn(6) + 1
@@ -109,19 +107,17 @@ func (dg *DiceGame) ScoreCategory(category string, player string) (int, error) {
 	score := dg.calculateScore(category)
 	dg.Scores[player] += score
 
-	// Move to next player
 	dg.CurrentPlayer = (dg.CurrentPlayer + 1) % len(dg.Players)
 	if dg.CurrentPlayer == 0 {
 		dg.Round++
 	}
-	dg.RollsLeft = 3         // Reset rolls for next player
-	dg.Dice = make([]int, 5) // Reset dice
+	dg.RollsLeft = 3
+	dg.Dice = make([]int, 5)
 
 	return score, nil
 }
 
 func (dg *DiceGame) calculateScore(category string) int {
-	// Implement dice scoring logic
 	switch category {
 	case "ones":
 		return dg.countDice(1) * 1
@@ -214,13 +210,11 @@ func (dg *DiceGame) isFullHouse() bool {
 }
 
 func (dg *DiceGame) isSmallStraight() bool {
-	// Check for 4 consecutive numbers
 	unique := make(map[int]bool)
 	for _, die := range dg.Dice {
 		unique[die] = true
 	}
 
-	// Check sequences
 	sequences := [][]int{
 		{1, 2, 3, 4},
 		{2, 3, 4, 5},
@@ -243,11 +237,9 @@ func (dg *DiceGame) isSmallStraight() bool {
 }
 
 func (dg *DiceGame) isLargeStraight() bool {
-	// Check for 5 consecutive numbers
 	sorted := make([]int, len(dg.Dice))
 	copy(sorted, dg.Dice)
 
-	// Simple bubble sort for small array
 	for i := 0; i < len(sorted)-1; i++ {
 		for j := 0; j < len(sorted)-i-1; j++ {
 			if sorted[j] > sorted[j+1] {
@@ -256,7 +248,6 @@ func (dg *DiceGame) isLargeStraight() bool {
 		}
 	}
 
-	// Check if consecutive
 	for i := 1; i < len(sorted); i++ {
 		if sorted[i] != sorted[i-1]+1 {
 			return false
@@ -270,7 +261,7 @@ type Match3Game struct {
 	Board       [][]int `json:"board"`
 	Score       int     `json:"score"`
 	MovesLeft   int     `json:"moves_left"`
-	TimeLeft    int     `json:"time_left"` // in seconds
+	TimeLeft    int     `json:"time_left"`
 	TargetScore int     `json:"target_score"`
 }
 
@@ -283,7 +274,6 @@ func (ge *GameEngine) CreateMatch3Game(width, height int) (*Match3Game, error) {
 		TargetScore: 1000,
 	}
 
-	// Initialize board with random gems (1-7)
 	for i := range game.Board {
 		game.Board[i] = make([]int, width)
 		for j := range game.Board[i] {
@@ -291,25 +281,19 @@ func (ge *GameEngine) CreateMatch3Game(width, height int) (*Match3Game, error) {
 		}
 	}
 
-	// Ensure no initial matches
 	game.removeMatches()
-
 	return game, nil
 }
 
-func (mg *Match3Game) Swap(x1, y1, x2, y2 int) (bool, [][]int) {
-	// Check if swap is valid (adjacent)
+func (mg *Match3Game) Swap(x1, y1, x2, y2 int) (bool, [][][]int) {
 	if !mg.isAdjacent(x1, y1, x2, y2) {
 		return false, nil
 	}
 
-	// Perform swap
 	mg.Board[y1][x1], mg.Board[y2][x2] = mg.Board[y2][x2], mg.Board[y1][x1]
 
-	// Check for matches
 	matches := mg.findMatches()
 	if len(matches) == 0 {
-		// Swap back if no matches
 		mg.Board[y1][x1], mg.Board[y2][x2] = mg.Board[y2][x2], mg.Board[y1][x1]
 		return false, nil
 	}
@@ -318,7 +302,7 @@ func (mg *Match3Game) Swap(x1, y1, x2, y2 int) (bool, [][]int) {
 	return true, matches
 }
 
-func (mg *Match3Game) ProcessMatches(matches [][]int) int {
+func (mg *Match3Game) ProcessMatches(matches [][][]int) int {
 	points := 0
 	matchedCells := make(map[[2]int]bool)
 
@@ -328,7 +312,6 @@ func (mg *Match3Game) ProcessMatches(matches [][]int) int {
 			matchedCells[[2]int{x, y}] = true
 		}
 
-		// Score calculation: base * multiplier
 		baseScore := len(match) * 100
 		if len(match) >= 4 {
 			baseScore *= 2
@@ -340,18 +323,13 @@ func (mg *Match3Game) ProcessMatches(matches [][]int) int {
 		points += baseScore
 	}
 
-	// Remove matched cells
 	for cell := range matchedCells {
 		x, y := cell[0], cell[1]
 		mg.Board[y][x] = 0
 	}
 
-	// Apply gravity
 	mg.applyGravity()
-
-	// Fill empty spaces
 	mg.fillEmptySpaces()
-
 	mg.Score += points
 	return points
 }
@@ -362,10 +340,10 @@ func (mg *Match3Game) isAdjacent(x1, y1, x2, y2 int) bool {
 	return (dx == 1 && dy == 0) || (dx == 0 && dy == 1)
 }
 
-func (mg *Match3Game) findMatches() [][]int {
+func (mg *Match3Game) findMatches() [][][]int {
 	height := len(mg.Board)
 	width := len(mg.Board[0])
-	var matches [][]int
+	var matches [][][]int
 
 	// Check horizontal matches
 	for y := 0; y < height; y++ {
@@ -382,11 +360,11 @@ func (mg *Match3Game) findMatches() [][]int {
 			}
 
 			if length >= 3 {
-				match := make([][2]int, length)
+				match := make([][]int, length)
 				for i := 0; i < length; i++ {
-					match[i] = [2]int{x + i, y}
+					match[i] = []int{x + i, y}
 				}
-				matches = append(matches, convertMatch(match))
+				matches = append(matches, match)
 			}
 
 			x += length
@@ -408,11 +386,11 @@ func (mg *Match3Game) findMatches() [][]int {
 			}
 
 			if length >= 3 {
-				match := make([][2]int, length)
+				match := make([][]int, length)
 				for i := 0; i < length; i++ {
-					match[i] = [2]int{x, y + i}
+					match[i] = []int{x, y + i}
 				}
-				matches = append(matches, convertMatch(match))
+				matches = append(matches, match)
 			}
 
 			y += length
@@ -429,7 +407,6 @@ func (mg *Match3Game) removeMatches() {
 			break
 		}
 
-		// Reshuffle if initial board has matches
 		for i := range mg.Board {
 			for j := range mg.Board[i] {
 				mg.Board[i][j] = rand.Intn(7) + 1
@@ -477,14 +454,6 @@ func abs(x int) int {
 	return x
 }
 
-func convertMatch(match [][2]int) [][]int {
-	result := make([][]int, len(match))
-	for i, cell := range match {
-		result[i] = []int{cell[0], cell[1]}
-	}
-	return result
-}
-
 // Game session management
 func (ge *GameEngine) CreateSession(gameSlug, hostID string, isPrivate bool, password string) (*GameSession, error) {
 	sessionID := generateSessionID()
@@ -502,7 +471,6 @@ func (ge *GameEngine) CreateSession(gameSlug, hostID string, isPrivate bool, pas
 		Password:  password,
 	}
 
-	// Initialize game state based on game type
 	var game models.Game
 	if err := ge.DB.Where("slug = ?", gameSlug).First(&game).Error; err != nil {
 		return nil, err
@@ -518,10 +486,7 @@ func (ge *GameEngine) CreateSession(gameSlug, hostID string, isPrivate bool, pas
 		session.State["game"] = match3Game
 	}
 
-	// Store session (in production, use Redis or similar)
-	// For now, we'll use a map
 	sessions[sessionID] = session
-
 	return session, nil
 }
 
@@ -535,7 +500,6 @@ func (ge *GameEngine) JoinSession(sessionID, playerID, playerName, password stri
 		return fmt.Errorf("invalid password")
 	}
 
-	// Check if player already joined
 	for _, player := range session.Players {
 		if player.ID == playerID {
 			return fmt.Errorf("player already joined")
@@ -558,7 +522,6 @@ func (ge *GameEngine) UpdateGameState(sessionID string, playerID string, action 
 		return fmt.Errorf("session not found")
 	}
 
-	// Verify player is in session
 	found := false
 	for _, player := range session.Players {
 		if player.ID == playerID {
@@ -570,10 +533,7 @@ func (ge *GameEngine) UpdateGameState(sessionID string, playerID string, action 
 		return fmt.Errorf("player not in session")
 	}
 
-	// Update game state based on action
-	// This would be game-specific logic
 	session.UpdatedAt = time.Now()
-
 	return nil
 }
 

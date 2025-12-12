@@ -1,0 +1,140 @@
+.PHONY: build run dev test clean migrate seed init docker-build docker-run blog-process bsky-sync
+# Process blog posts
+blog-process:
+	@echo "Processing blog posts..."
+	go run cmd/blog_processor/main.go
+
+# Sync BlueSky data
+bsky-sync:
+	@echo "Syncing BlueSky data..."
+	go run cmd/bsky_sync/main.go
+
+# Build the server
+build:
+	@echo "Building server..."
+	go build -ldflags="-s -w" -o dist/server main.go
+
+# Run the server
+run: build
+	@echo "Starting server..."
+	./dist/server
+
+# Development mode with auto-reload (requires air)
+dev:
+	@echo "Starting development server..."
+	air
+
+# Run tests
+test:
+	@echo "Running tests..."
+	go test -v ./...
+
+# Clean build artifacts
+clean:
+	@echo "Cleaning..."
+	rm -rf dist/
+	rm -f blog.db blog.db-shm blog.db-wal
+
+# Initialize database and create admin user
+init:
+	@echo "Initializing database..."
+	@if [ ! -f .env ]; then \
+		echo "Creating .env file from .env.example..."; \
+		cp .env.example .env; \
+		echo "Please edit .env file with your configuration"; \
+	fi
+	@mkdir -p blog/posts/Casual blog/posts/Interlude blog/posts/Serious
+	@mkdir -p blog/profile blog/assets/images
+	@mkdir -p media/uploads media/thumbnails
+	go run cmd/init/main.go
+
+# Migrate database (placeholder - implement actual migrations)
+migrate:
+	@echo "Running migrations..."
+	@echo "Migrations are handled automatically by GORM AutoMigrate"
+
+# Seed database with sample data
+seed: build
+	@echo "Seeding database..."
+	@echo "Implement seed command in cmd/seed/main.go"
+
+# Build Docker image
+docker-build:
+	@echo "Building Docker image..."
+	docker build -t lilithinaparka-backend .
+
+# Run Docker container
+docker-run:
+	@echo "Running Docker container..."
+	docker run -p 8080:8080 -v $(PWD)/blog:/app/blog -v $(PWD)/media:/app/media lilithinaparka-backend
+
+# Development with Docker Compose
+docker-dev:
+	@echo "Starting development environment with Docker Compose..."
+	docker-compose up --build
+
+# Stop Docker Compose
+docker-stop:
+	docker-compose down
+
+# View logs
+logs:
+	tail -f server.log
+
+# Format code
+fmt:
+	@echo "Formatting code..."
+	go fmt ./...
+
+# Lint code (requires golangci-lint)
+lint:
+	@echo "Linting code..."
+	golangci-lint run
+
+# Install dependencies
+deps:
+	@echo "Installing dependencies..."
+	go mod download
+	go mod tidy
+
+# Update dependencies
+update:
+	@echo "Updating dependencies..."
+	go get -u ./...
+	go mod tidy
+
+# Create a backup of the database
+backup:
+	@echo "Creating database backup..."
+	@mkdir -p backups
+	@cp blog.db backups/blog_$(shell date +%Y%m%d_%H%M%S).db
+	@echo "Backup created in backups/ directory"
+
+# Help
+help:
+	@echo "Available commands:"
+	@echo "  make build       - Build the server binary"
+	@echo "  make run         - Build and run the server"
+	@echo "  make dev         - Run in development mode with auto-reload"
+	@echo "  make test        - Run tests"
+	@echo "  make clean       - Clean build artifacts and database"
+	@echo "  make init        - Initialize project structure and database"
+	@echo "  make seed        - Seed database with sample data"
+	@echo "  make docker-build - Build Docker image"
+	@echo "  make docker-run  - Run Docker container"
+	@echo "  make docker-dev  - Start development environment with Docker Compose"
+	@echo "  make backup      - Create database backup"
+	@echo "  make fmt         - Format code"
+	@echo "  make lint        - Lint code"
+	@echo "  make deps        - Install dependencies"
+	@echo "  make help        - Show this help message"
+
+# Process blog posts
+blog-process:
+	@echo "Processing blog posts..."
+	go run cmd/blog_processor/main.go
+
+# Sync BlueSky data
+bsky-sync:
+	@echo "Syncing BlueSky data..."
+	go run cmd/bsky_sync/main.go

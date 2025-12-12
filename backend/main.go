@@ -2,6 +2,7 @@ package main
 
 import (
 	"log"
+	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
@@ -16,6 +17,7 @@ import (
 	mw "github.com/okavatti/lilithinaparka.i2p/backend/m/v2/server/middleware"
 	"github.com/okavatti/lilithinaparka.i2p/backend/m/v2/server/models"
 	"github.com/okavatti/lilithinaparka.i2p/backend/m/v2/server/utils"
+	"golang.org/x/time/rate"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
@@ -130,34 +132,6 @@ func initDatabase(dbPath string) (*gorm.DB, error) {
 	return db, nil
 }
 
-func loadInitialData() error {
-	log.Println("Loading initial data...")
-
-	// Load profile
-	if err := blog.LoadProfile(db, "./blog/profile/info.txt"); err != nil {
-		log.Printf("Warning: Failed to load profile: %v", err)
-	}
-
-	// Scan blog posts
-	if err := blog.ScanBlogPosts(db, "./blog"); err != nil {
-		log.Printf("Warning: Failed to scan blog posts: %v", err)
-	}
-
-	// Fetch BlueSky posts
-	bskyHandle := cfg.External.BskyHandle
-	if bskyHandle != "" {
-		if err := bsky.FetchBskyPosts(db, bskyHandle); err != nil {
-			log.Printf("Warning: Failed to fetch BlueSky posts: %v", err)
-		}
-		if err := bsky.FetchBskyProfile(db, bskyHandle); err != nil {
-			log.Printf("Warning: Failed to fetch BlueSky profile: %v", err)
-		}
-	}
-
-	log.Println("Initial data load complete")
-	return nil
-}
-
 func startBackgroundSync() {
 	ticker := time.NewTicker(5 * time.Minute)
 	go func() {
@@ -197,9 +171,10 @@ func setupMiddleware(e *echo.Echo) {
 	// Recover from panics
 	e.Use(middleware.Recover())
 
-	// Rate limiting
+	// Rate limiting - Convert int to rate.Limit
+	rateLimit := rate.Limit(cfg.Security.RateLimit)
 	e.Use(middleware.RateLimiterWithConfig(middleware.RateLimiterConfig{
-		Store: middleware.NewRateLimiterMemoryStore(cfg.Security.RateLimit),
+		Store: middleware.NewRateLimiterMemoryStore(rateLimit),
 	}))
 
 	// JWT middleware (optional authentication)
@@ -212,6 +187,34 @@ func setupMiddleware(e *echo.Echo) {
 		XFrameOptions:         "DENY",
 		ContentSecurityPolicy: "default-src 'self'",
 	}))
+}
+
+// In main.go, update the loadInitialData function
+func loadInitialData() error {
+	log.Println("Loading initial data...")
+
+	// Load profile using enhanced function
+	if err := blog.LoadProfile(db, "./blog/profile/info.txt"); err != nil {
+		log.Printf("Warning: Failed to load profile: %v", err)
+	}
+
+	// Use enhanced blog processor
+	blogProcessor := blog.NewBlogProcessor(db, "./blog")
+	if err := blogProcessor.ProcessAllPosts(); err != nil {
+		log.Printf("Warning: Failed to process blog posts: %v", err)
+	}
+
+	// Use enhanced BlueSky sync
+	bskyHandle := cfg.External.BskyHandle
+	if bskyHandle != "" {
+		bskyEnhanced := bsky.NewBskyEnhanced(db, bskyHandle)
+		if err := bskyEnhanced.SyncProfileAndPosts(); err != nil {
+			log.Printf("Warning: Failed to sync BlueSky data: %v", err)
+		}
+	}
+
+	log.Println("Initial data load complete")
+	return nil
 }
 
 func setupRoutes(e *echo.Echo) {
@@ -257,6 +260,18 @@ func setupRoutes(e *echo.Echo) {
 	bskyGroup.GET("/post", bskyHandlers.GetPostByURI)
 	bskyGroup.POST("/refresh", bskyHandlers.RefreshPosts, mw.RequireAuth(), mw.RequireAdmin())
 	bskyGroup.POST("/profile/refresh", bskyHandlers.RefreshProfile, mw.RequireAuth(), mw.RequireAdmin())
+	bskyGroup.POST("/refresh", bskyHandlers.RefreshPosts, mw.RequireAuth(), mw.RequireAdmin())
+	bskyGroup.POST("/profile/refresh", bskyHandlers.RefreshProfile, mw.RequireAuth(), mw.RequireAdmin())
+	bskyGroup.GET("/stats", func(c echo.Context) error {
+		bskyEnhanced := bsky.NewBskyEnhanced(db, cfg.External.BskyHandle)
+		stats, err := bskyEnhanced.GetFeedStats()
+		if err != nil {
+			return c.JSON(http.StatusInternalServerError, map[string]string{
+				"error": "Failed to get BlueSky stats",
+			})
+		}
+		return c.JSON(http.StatusOK, stats)
+	})
 
 	// Profile routes
 	profileGroup := api.Group("/profile")

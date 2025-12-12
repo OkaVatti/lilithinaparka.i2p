@@ -1,91 +1,65 @@
-import { defineStore } from "pinia";
-import type { Game, GameScore } from "~/types";
+// stores/games.ts
+import { defineStore } from 'pinia'
+import { ref } from 'vue'
+import { useApi } from '~/composables/useApi'
+import type { Game, GameScore } from '~~/types'
 
-export const useGamesStore = defineStore("games", {
-  state: () => ({
-    games: [] as Game[],
-    currentGame: null as Game | null,
-    leaderboard: [] as GameScore[],
-    loading: false,
-    error: null as string | null,
-  }),
+export const useGamesStore = defineStore('games', () => {
+  const games = ref<Game[]>([])
+  const currentGame = ref<Game | null>(null)
+  const loading = ref(false)
+  const error = ref<string | null>(null)
 
-  actions: {
-    async fetchGames() {
-      this.loading = true;
-      this.error = null;
+  const { apiFetch } = useApi()
 
-      try {
-        const { apiFetch } = useApi();
-        this.games = await apiFetch<Game[]>("/games");
-      } catch (err) {
-        this.error = err instanceof Error
-          ? err.message
-          : "Failed to fetch games";
-      } finally {
-        this.loading = false;
-      }
-    },
+  async function loadAll() {
+    loading.value = true
+    error.value = null
+    try {
+      const res = await apiFetch<Game[]>('/games')
+      games.value = res || []
+    } catch (e: any) {
+      error.value = e.message
+    } finally {
+      loading.value = false
+    }
+  }
 
-    async fetchGameBySlug(slug: string) {
-      this.loading = true;
-      this.error = null;
+  async function loadBySlug(slug: string) {
+    try {
+      const res = await apiFetch<Game>(`/games/${encodeURIComponent(slug)}`)
+      currentGame.value = res
+      return res
+    } catch (e: any) {
+      error.value = e.message
+      return null
+    }
+  }
 
-      try {
-        const { apiFetch } = useApi();
-        this.currentGame = await apiFetch<Game>(`/games/${slug}`);
-      } catch (err) {
-        this.error = err instanceof Error
-          ? err.message
-          : "Failed to fetch game";
-        this.currentGame = null;
-      } finally {
-        this.loading = false;
-      }
-    },
+  async function getLeaderboard(slug: string, params = '') {
+    return await apiFetch<GameScore[]>(`/games/${encodeURIComponent(slug)}/leaderboard${params ? params : ''}`)
+  }
 
-    async fetchLeaderboard(slug: string, limit = 100) {
-      this.loading = true;
-      this.error = null;
+  async function getRecent(slug: string, params = '') {
+    return await apiFetch<GameScore[]>(`/games/${encodeURIComponent(slug)}/recent${params ? params : ''}`)
+  }
 
-      try {
-        const { apiFetch } = useApi();
-        this.leaderboard = await apiFetch<GameScore[]>(
-          `/games/${slug}/leaderboard?limit=${limit}`,
-        );
-      } catch (err) {
-        this.error = err instanceof Error
-          ? err.message
-          : "Failed to fetch leaderboard";
-      } finally {
-        this.loading = false;
-      }
-    },
+  async function submitScore(slug: string, payload: { alias: string; score: number; metadata?: any }) {
+    return await apiFetch(`/games/${encodeURIComponent(slug)}/score`, {
+      method: 'POST',
+      body: payload
+    })
+  }
 
-    async submitScore(
-      slug: string,
-      alias: string,
-      score: number,
-      level = 1,
-      data = "{}",
-    ) {
-      this.loading = true;
-      this.error = null;
-
-      try {
-        const { apiFetch } = useApi();
-        await apiFetch(`/games/${slug}/score`, {
-          method: "POST",
-          body: JSON.stringify({ alias, score, level, data }),
-        });
-      } catch (err) {
-        this.error = err instanceof Error
-          ? err.message
-          : "Failed to submit score";
-        throw err;
-      } finally {
-        this.loading = false;
-      }
-    },
-  },
-});
+  return {
+    games,
+    currentGame,
+    loading,
+    error,
+    loadAll,
+    loadBySlug,
+    getLeaderboard,
+    getRecent,
+    submitScore
+  }
+})
