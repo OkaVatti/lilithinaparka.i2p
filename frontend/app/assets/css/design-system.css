@@ -1,0 +1,558 @@
+/* ===== Enhanced Design System ===== */
+/* Combines system.css aesthetics with modern design tokens */
+
+:root {
+  /* Enhanced Typography Scale */
+  --font-mono:
+    "SF Mono", "Cascadia Code", "JetBrains Mono", "Fira Code", "Courier New",
+    monospace;
+  --font-ui: "Segoe UI", -apple-system, BlinkMacSystemFont, "Inter", sans-serif;
+  --font-display: "IBM Plex Mono", "Space Mono", "Roboto Mono", monospace;
+
+  /* Enhanced Spacing Scale */
+  --space-xxs: 0.125rem; /* 2px */
+  --space-xs: 0.25rem; /* 4px */
+  --space-sm: 0.5rem; /* 8px */
+  --space-md: 1rem; /* 16px */
+  --space-lg: 1.5rem; /* 24px */
+  --space-xl: 2rem; /* 32px */
+  --space-xxl: 3rem; /* 48px */
+
+  /* Enhanced Border Radius */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-pill: 9999px;
+
+  /* Enhanced Shadows */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 8px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 8px 16px rgba(0, 0, 0, 0.5);
+  --shadow-xl: 0 16px 32px rgba(0, 0, 0, 0.6);
+  --shadow-inner: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+
+  /* Enhanced Transitions */
+  --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-base: 250ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-slow: 350ms cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* Focus States */
+  --focus-ring:
+    0 0 0 2px var(--theme-primary), 0 0 0 4px rgba(
+    var(--theme-primary-rgb),
+    0.2
+  );
+  --focus-ring-inset: inset 0 0 0 2px var(--theme-primary);
+
+  /* Glass Morphism */
+  --glass-bg: rgba(255, 255, 255, 0.05);
+  --glass-border: rgba(255, 255, 255, 0.1);
+  --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  --backdrop-blur: blur(12px);
+
+  /* Terminal-Specific Variables */
+  --terminal-header-height: 40px;
+  --terminal-sidebar-width: 250px;
+  --terminal-command-height: 32px;
+  --terminal-cursor-width: 8px;
+  --terminal-scrollbar-width: 12px;
+
+  /* Animation Keyframes */
+  --animation-blink: blink 1s infinite;
+  --animation-glitch: glitch 0.3s infinite;
+  --animation-typing: typing 3.5s steps(40, end);
+  --animation-scanline: scanline 10s linear infinite;
+  --animation-pulse: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* ===== Enhanced System.css Overrides ===== */
+/* Make system.css more modern while keeping its charm */
+
+.system-window {
+  --window-border-width: 2px;
+  --window-border-style: solid;
+  --window-border-color: var(--theme-border);
+  --window-background: var(--theme-bg);
+  --window-shadow: var(--shadow-lg);
+
+  background: var(--window-background);
+  border: var(--window-border-width) var(--window-border-style)
+    var(--window-border-color);
+  border-radius: var(--radius-md);
+  box-shadow: var(--window-shadow);
+  position: relative;
+  overflow: hidden;
+}
+
+.system-window::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.1),
+    transparent
+  );
+  animation: var(--animation-scanline);
+}
+
+.system-title-bar {
+  --title-bar-height: 32px;
+  --title-bar-bg: linear-gradient(
+    to bottom,
+    color-mix(in srgb, var(--theme-primary) 90%, black),
+    color-mix(in srgb, var(--theme-primary) 70%, black)
+  );
+  --title-bar-color: white;
+  --title-bar-font-weight: 600;
+
+  height: var(--title-bar-height);
+  background: var(--title-bar-bg);
+  color: var(--title-bar-color);
+  font-weight: var(--title-bar-font-weight);
+  display: flex;
+  align-items: center;
+  padding: 0 var(--space-sm);
+  border-bottom: 2px solid var(--theme-border);
+  font-family: var(--font-ui);
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.5);
+}
+
+.system-title-bar-controls {
+  margin-left: auto;
+  display: flex;
+  gap: var(--space-xs);
+}
+
+.system-button {
+  --button-bg: var(--theme-surface);
+  --button-border: var(--theme-border);
+  --button-color: var(--theme-fg);
+  --button-hover-bg: color-mix(in srgb, var(--theme-primary) 20%, transparent);
+  --button-hover-border: var(--theme-primary);
+  --button-active-bg: color-mix(in srgb, var(--theme-primary) 40%, transparent);
+  --button-active-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.5);
+
+  background: var(--button-bg);
+  border: 2px solid var(--button-border);
+  color: var(--button-color);
+  padding: var(--space-xs) var(--space-md);
+  font-family: var(--font-mono);
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  position: relative;
+  overflow: hidden;
+}
+
+.system-button:hover {
+  background: var(--button-hover-bg);
+  border-color: var(--button-hover-border);
+  transform: translateY(-1px);
+}
+
+.system-button:active {
+  background: var(--button-active-bg);
+  box-shadow: var(--button-active-shadow);
+  transform: translateY(0);
+}
+
+.system-button:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+
+.system-button::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.1),
+    transparent
+  );
+  transition: left 0.5s;
+}
+
+.system-button:hover::after {
+  left: 100%;
+}
+
+/* ===== Enhanced Terminal Elements ===== */
+
+.terminal-command {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-sm);
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid var(--theme-border);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-mono);
+  margin-bottom: var(--space-sm);
+}
+
+.terminal-prompt {
+  color: var(--theme-accent);
+  font-weight: bold;
+  user-select: none;
+}
+
+.terminal-input {
+  background: transparent;
+  border: none;
+  color: var(--theme-fg);
+  font-family: var(--font-mono);
+  font-size: 1rem;
+  flex: 1;
+  outline: none;
+  caret-color: var(--theme-accent);
+}
+
+.terminal-input::placeholder {
+  color: var(--theme-muted);
+  opacity: 0.6;
+}
+
+.terminal-output {
+  padding: var(--space-md);
+  background: rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-mono);
+  line-height: 1.6;
+  overflow-x: auto;
+  position: relative;
+}
+
+.terminal-output::before {
+  content: "> OUTPUT";
+  position: absolute;
+  top: -8px;
+  left: var(--space-sm);
+  background: var(--theme-bg);
+  padding: 0 var(--space-xs);
+  font-size: 0.75rem;
+  color: var(--theme-muted);
+  letter-spacing: 0.05em;
+}
+
+/* ===== Glass Effects ===== */
+
+.glass-panel {
+  background: var(--glass-bg);
+  backdrop-filter: var(--backdrop-blur);
+  -webkit-backdrop-filter: var(--backdrop-blur);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--glass-shadow);
+  position: relative;
+  overflow: hidden;
+}
+
+.glass-panel::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.05) 0%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  pointer-events: none;
+}
+
+.glass-button {
+  background: var(--glass-bg);
+  backdrop-filter: var(--backdrop-blur);
+  -webkit-backdrop-filter: var(--backdrop-blur);
+  border: 1px solid var(--glass-border);
+  color: var(--theme-fg);
+  padding: var(--space-sm) var(--space-lg);
+  border-radius: var(--radius-pill);
+  font-family: var(--font-ui);
+  font-weight: 500;
+  cursor: pointer;
+  transition: all var(--transition-base);
+  position: relative;
+  overflow: hidden;
+}
+
+.glass-button:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: var(--theme-primary);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 32px rgba(var(--theme-primary-rgb), 0.2);
+}
+
+.glass-button:active {
+  transform: translateY(0);
+}
+
+/* ===== Enhanced Theme System ===== */
+
+.theme-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: var(--space-md);
+}
+
+.theme-card {
+  padding: var(--space-md);
+  border: 2px solid var(--theme-border);
+  border-radius: var(--radius-md);
+  background: var(--theme-surface);
+  cursor: pointer;
+  transition: all var(--transition-base);
+  position: relative;
+  overflow: hidden;
+}
+
+.theme-card:hover {
+  border-color: var(--theme-primary);
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-md);
+}
+
+.theme-card.active {
+  border-color: var(--theme-accent);
+  box-shadow: 0 0 0 2px var(--theme-accent), var(--shadow-md);
+}
+
+.theme-preview {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2px;
+  margin-bottom: var(--space-sm);
+}
+
+.theme-preview-color {
+  height: 24px;
+  border-radius: var(--radius-sm);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* ===== Enhanced Typography ===== */
+
+.heading-3d {
+  font-family: var(--font-display);
+  font-weight: 700;
+  color: var(--theme-primary);
+  text-shadow:
+    1px 1px 0 var(--theme-border),
+    2px 2px 0 var(--theme-border),
+    3px 3px 0 var(--theme-border),
+    4px 4px 0 rgba(0, 0, 0, 0.5);
+  letter-spacing: -0.02em;
+}
+
+.text-gradient {
+  background: linear-gradient(
+    135deg,
+    var(--theme-primary),
+    var(--theme-accent)
+  );
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.text-glitch {
+  position: relative;
+  animation: var(--animation-glitch);
+}
+
+.text-glitch::before,
+.text-glitch::after {
+  content: attr(data-text);
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.text-glitch::before {
+  left: 2px;
+  text-shadow: -2px 0 var(--theme-accent);
+  clip: rect(24px, 550px, 90px, 0);
+}
+
+.text-glitch::after {
+  left: -2px;
+  text-shadow: -2px 0 var(--theme-primary);
+  clip: rect(85px, 550px, 140px, 0);
+}
+
+/* ===== Enhanced Animations ===== */
+
+@keyframes blink {
+  0%, 50% {
+    opacity: 1;
+  }
+  51%, 100% {
+    opacity: 0;
+  }
+}
+
+@keyframes glitch {
+  0% {
+    transform: translate(0);
+  }
+  20% {
+    transform: translate(-2px, 2px);
+  }
+  40% {
+    transform: translate(-2px, -2px);
+  }
+  60% {
+    transform: translate(2px, 2px);
+  }
+  80% {
+    transform: translate(2px, -2px);
+  }
+  100% {
+    transform: translate(0);
+  }
+}
+
+@keyframes typing {
+  from {
+    width: 0;
+  }
+  to {
+    width: 100%;
+  }
+}
+
+@keyframes scanline {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% center;
+  }
+  100% {
+    background-position: 200% center;
+  }
+}
+
+/* ===== Utility Classes ===== */
+
+.cursor-blink::after {
+  content: "▮";
+  animation: var(--animation-blink);
+  color: var(--theme-accent);
+  margin-left: 2px;
+}
+
+.text-typing {
+  overflow: hidden;
+  border-right: 2px solid var(--theme-primary);
+  white-space: nowrap;
+  animation: var(--animation-typing);
+}
+
+.shimmer-effect {
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.1),
+    transparent
+  );
+  background-size: 200% 100%;
+  animation: shimmer 2s infinite;
+}
+
+.float-animation {
+  animation: float 3s ease-in-out infinite;
+}
+
+.pulse-animation {
+  animation: var(--animation-pulse);
+}
+
+/* ===== Responsive Enhancements ===== */
+
+@media (max-width: 768px) {
+  :root {
+    --terminal-sidebar-width: 200px;
+    --space-md: 0.75rem;
+    --space-lg: 1.25rem;
+  }
+
+  .system-title-bar {
+    --title-bar-height: 28px;
+    font-size: 0.875rem;
+  }
+
+  .theme-grid {
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  }
+}
+
+@media (max-width: 480px) {
+  :root {
+    --terminal-sidebar-width: 0;
+    --space-md: 0.5rem;
+  }
+
+  .system-title-bar {
+    padding: 0 var(--space-xs);
+  }
+
+  .theme-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ===== Print Styles ===== */
+
+@media print {
+  .system-title-bar,
+  .glass-panel::before,
+  .terminal-output::before {
+    display: none;
+  }
+
+  .system-window {
+    box-shadow: none;
+    border: 1px solid #ccc;
+  }
+}

@@ -9,7 +9,7 @@
             </NuxtLink>
           </div>
           <div class="title-bar-controls">
-            <ThemePicker />
+            <ThemeButton />
           </div>
         </div>
         <div class="window-body">
@@ -56,6 +56,7 @@
 import { useProfileStore } from '~~/stores/profile'
 import { useAuth } from '~/composables/useAuth'
 import { useRoute } from '#vue-router'
+import ThemeButton from '~/components/Universal/Theme/ThemeButton.vue'
 
 const profileStore = useProfileStore()
 const auth = useAuth()
@@ -73,6 +74,13 @@ onMounted(() => {
   top: 0;
   z-index: 100;
   background: var(--theme-bg);
+  border-bottom: 2px solid var(--theme-border);
+}
+
+.title-bar-controls {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
 }
 
 .main-nav menu {

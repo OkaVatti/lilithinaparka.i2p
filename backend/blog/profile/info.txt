@@ -1,6 +1,6 @@
 pic         = "../images/profile-pic-1.png"
 name        = "Lilith Parker"
-cake_day    = "June 13th, 2005"
+cake_day    = "1118663220"
 bio         = "chronically online cat-girl who likes programming, music, and burritos"
 
 interests = [
