@@ -9,7 +9,10 @@ export default defineNuxtConfig({
   runtimeConfig: {
     public: {
       apiBase: process.env.NUXT_PUBLIC_API_BASE || "http://localhost:8080/api",
-      i2pApiHost: process.env.NUXT_I2P_API_TUNNEL || "https://127.0.0.1:7667",
+      siteName: process.env.NUXT_PUBLIC_SITE_NAME || "lilithinaparka.i2p",
+      bskyHandle: process.env.NUXT_PUBLIC_BSKY_HANDLE ||
+        "@lilithinaparka.bsky.social",
+      defaultTheme: process.env.NUXT_PUBLIC_DEFAULT_THEME || "dracula",
     },
   },
 
@@ -26,13 +29,18 @@ export default defineNuxtConfig({
       meta: [
         { charset: "utf-8" },
         { name: "viewport", content: "width=device-width, initial-scale=1" },
-        { name: "description", content: "TUI-inspired blog and games portal" },
+        {
+          name: "description",
+          content: "TUI-inspired blog and games portal on I2P",
+        },
       ],
       link: [
-        { rel: "icon", type: "image/x-icon", href: "/favicon.ico" },
+        { rel: "icon", type: "image/svg+xml", href: "/favicon.svg" },
       ],
     },
   },
 
   ssr: true,
+
+  devtools: { enabled: true },
 });

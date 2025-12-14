@@ -1,101 +1,89 @@
 <template>
-  <footer class="site-footer">
-    <div class="container">
-      <div class="footer-content">
-        <div class="footer-section">
-          <h3>About</h3>
-          <p>{{ profileStore.profile?.bio || 'A minimalist blog on I2P' }}</p>
-        </div>
-        
-        <div class="footer-section">
-          <h3>Links</h3>
-          <div class="footer-links">
-            <a v-if="profileStore.profile?.github" :href="profileStore.profile.github" target="_blank" rel="noopener">
-              <FeatherIcon name="github" size="20" />
-              <span>GitHub</span>
-            </a>
-            <a v-if="profileStore.profile?.bluesky" :href="profileStore.profile.bluesky" target="_blank" rel="noopener">
-              <FeatherIcon name="cloud" size="20" />
-              <span>BlueSky</span>
-            </a>
-            <a v-if="profileStore.profile?.rss_feed" :href="profileStore.profile.rss_feed">
-              <FeatherIcon name="rss" size="20" />
-              <span>RSS</span>
-            </a>
-          </div>
-        </div>
-        
-        <div class="footer-section">
-          <h3>Built With</h3>
-          <p>Nuxt 4 • Vue 3 • Deno • System.css</p>
-          <p class="copyright">© {{ new Date().getFullYear() }} {{ profileStore.profile?.name }}</p>
-        </div>
-      </div>
+  <aside class="sidebar" role="navigation" aria-label="Main navigation">
+    <div class="brand">
+      <img :src="logo" alt="logo" class="brand-logo" v-if="logo"/>
+      <h1 class="brand-title">Lilith</h1>
     </div>
-  </footer>
+
+    <nav class="nav">
+      <NuxtLink :to="'/'" class="nav-link" active-class="active">Home</NuxtLink>
+      <NuxtLink :to="'/blog'" class="nav-link" active-class="active">Blog</NuxtLink>
+      <NuxtLink :to="'/art'" class="nav-link" active-class="active">Art</NuxtLink>
+      <NuxtLink :to="'/profile'" class="nav-link" active-class="active">Profile</NuxtLink>
+      <NuxtLink :to="'/about'" class="nav-link" active-class="active">About</NuxtLink>
+    </nav>
+
+    <div class="sidebar-footer">
+      <slot name="footer">
+        <button class="btn btn-primary" @click="toggleTheme">Toggle theme</button>
+      </slot>
+    </div>
+  </aside>
 </template>
 
 <script setup lang="ts">
-import { useProfileStore } from '~/pages/profile/profile'
+import { useTheme } from '~/composables/useTheme'
+const props = defineProps({
+  logo: { type: String, default: '/icon-192.png' }
+})
 
-const profileStore = useProfileStore()
+const { currentTheme, themes, setTheme } = useTheme()
+
+function toggleTheme() {
+  const list = themes.value.map(t => t.value)
+  const idx = list.indexOf(currentTheme.value)
+  const next = list[(idx + 1) % list.length]
+  setTheme(next)
+}
 </script>
 
 <style scoped>
-.site-footer {
-  background: var(--theme-bg);
-  border-top: 2px solid var(--theme-border);
-  padding: 2rem 0;
-  margin-top: 4rem;
-}
+@import '~/system.css';
 
-.footer-content {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 2rem;
+.sidebar {
+  width: 220px;
+  padding: 1rem;
+  border-right: 1px solid var(--theme-border);
+  background: linear-gradient(180deg, color-mix(in srgb, var(--theme-surface) 90%, transparent), transparent);
+  min-height: 100vh;
+  box-sizing: border-box;
 }
-
-.footer-section h3 {
-  margin-bottom: 1rem;
-  font-size: 1.2rem;
-  color: var(--theme-primary);
+.brand {
+  display:flex;
+  align-items:center;
+  gap:.6rem;
+  margin-bottom: 1.1rem;
 }
-
-.footer-section p {
-  margin: 0.5rem 0;
+.brand-logo {
+  width:40px; height:40px; border-radius:6px; object-fit:cover;
+  border:1px solid var(--theme-border);
+}
+.brand-title {
+  font-size:1.05rem;
   color: var(--theme-fg);
-  opacity: 0.8;
+  margin:0;
 }
-
-.footer-links {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
+.nav {
+  display:flex;
+  flex-direction:column;
+  gap:.45rem;
 }
-
-.footer-links a {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.5rem;
-  border: 1px solid var(--theme-border);
-  border-radius: 4px;
-  transition: all 0.2s;
+.nav-link {
+  padding: .5rem .6rem;
+  border-radius:6px;
+  color:var(--theme-fg);
+  text-decoration:none;
 }
-
-.footer-links a:hover {
-  border-color: var(--theme-primary);
-  background: rgba(189, 147, 249, 0.1);
+.nav-link.active, .nav-link:hover {
+  background: var(--theme-primary);
+  color: white;
 }
-
-.copyright {
-  margin-top: 1rem;
-  font-size: 0.9rem;
+.sidebar-footer {
+  margin-top: auto;
+  padding-top: 1rem;
+  border-top: 1px dashed var(--theme-border);
 }
-
-@media (max-width: 768px) {
-  .footer-content {
-    grid-template-columns: 1fr;
-  }
+.btn {
+  width:100%;
 }
 </style>

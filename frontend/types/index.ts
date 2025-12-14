@@ -122,7 +122,7 @@ export interface GameMetadata {
 export interface Notification {
   id: number;
   user_id: number;
-  type: 'info' | 'success' | 'warning' | 'error';
+  type: "info" | "success" | "warning" | "error";
   title: string;
   message: string;
   read: boolean;

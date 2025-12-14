@@ -1,73 +1,113 @@
-/* Base theme variables */
+/* app/styles/themes.css
+   CSS variables used by the JS theme engine. These are fallbacks
+   so that server-rendered HTML has a consistent baseline.
+*/
 :root {
-  --theme-bg: var(--dracula-bg);
-  --theme-fg: var(--dracula-fg);
-  --theme-primary: var(--dracula-purple);
-  --theme-secondary: var(--dracula-pink);
-  --theme-accent: var(--dracula-cyan);
-  --theme-success: var(--dracula-green);
-  --theme-warning: var(--dracula-orange);
-  --theme-error: var(--dracula-red);
-  --theme-border: var(--dracula-current);
-  --theme-shadow: rgba(0, 0, 0, 0.3);
+  --theme-bg: #1e1e2e;
+  --theme-surface: #2b2b3a;
+  --theme-fg: #e6e6e6;
+  --theme-muted: #bdbdbd;
+  --theme-primary: #6272a4;
+  --theme-border: #33323a;
+  --theme-accent: #ff79c6;
+
+  color-scheme: dark;
 }
 
+/* small helpers */
+body {
+  background: var(--theme-bg);
+  color: var(--theme-fg);
+  font-family:
+    ui-monospace, SFMono-Regular, Menlo, Monaco, "Courier New", monospace;
+}
+
+/* simple "system 6" retro terminal look for main container */
+.container {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.02), transparent);
+  border: 1px solid var(--theme-border);
+  padding: 1rem;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+}
+
+/* fallback theme attribute selectors (if JS hasn't applied vars yet) */
 [data-theme="dracula"] {
-  --theme-bg: var(--dracula-bg);
-  --theme-fg: var(--dracula-fg);
-  --theme-primary: var(--dracula-purple);
-  --theme-secondary: var(--dracula-pink);
-  --theme-accent: var(--dracula-cyan);
-  --theme-success: var(--dracula-green);
-  --theme-warning: var(--dracula-orange);
-  --theme-error: var(--dracula-red);
-  --theme-border: var(--dracula-current);
+  --theme-bg: #282a36;
+  --theme-surface: #1e1f29;
+  --theme-fg: #f8f8f2;
+  --theme-muted: #bfbfbf;
+  --theme-primary: #6272a4;
+  --theme-border: #3a3b48;
+  --theme-accent: #ff79c6;
 }
 
 [data-theme="nord"] {
-  --theme-bg: var(--nord-bg);
-  --theme-fg: var(--nord-fg);
-  --theme-primary: var(--nord-frost3);
-  --theme-secondary: var(--nord-frost2);
-  --theme-accent: var(--nord-frost1);
-  --theme-success: var(--nord-aurora-green);
-  --theme-warning: var(--nord-aurora-yellow);
-  --theme-error: var(--nord-aurora-red);
-  --theme-border: var(--nord-frost4);
+  --theme-bg: #2e3440;
+  --theme-surface: #3b4252;
+  --theme-fg: #d8dee9;
+  --theme-muted: #a3b0c4;
+  --theme-primary: #88c0d0;
+  --theme-border: #4c566a;
+  --theme-accent: #81a1c1;
 }
 
 [data-theme="gruvbox"] {
-  --theme-bg: var(--gruvbox-bg);
-  --theme-fg: var(--gruvbox-fg);
-  --theme-primary: var(--gruvbox-blue);
-  --theme-secondary: var(--gruvbox-purple);
-  --theme-accent: var(--gruvbox-aqua);
-  --theme-success: var(--gruvbox-green);
-  --theme-warning: var(--gruvbox-yellow);
-  --theme-error: var(--gruvbox-red);
-  --theme-border: var(--gruvbox-orange);
+  --theme-bg: #282828;
+  --theme-surface: #3c3836;
+  --theme-fg: #ebdbb2;
+  --theme-muted: #a89984;
+  --theme-primary: #d79921;
+  --theme-border: #504945;
+  --theme-accent: #b16286;
 }
 
-[data-theme="tokyo"] {
-  --theme-bg: var(--tokyo-bg);
-  --theme-fg: var(--tokyo-fg);
-  --theme-primary: var(--tokyo-blue);
-  --theme-secondary: var(--tokyo-magenta);
-  --theme-accent: var(--tokyo-cyan);
-  --theme-success: var(--tokyo-green);
-  --theme-warning: var(--tokyo-yellow);
-  --theme-error: var(--tokyo-red);
-  --theme-border: var(--tokyo-blue);
+[data-theme="autumn"] {
+  --theme-bg: #1b1b17;
+  --theme-surface: #2a241f;
+  --theme-fg: #f7eee1;
+  --theme-muted: #c7b89a;
+  --theme-primary: #d65a31;
+  --theme-border: #3b322d;
+  --theme-accent: #e7a53b;
 }
 
-[data-theme="monokai"] {
-  --theme-bg: var(--monokai-bg);
-  --theme-fg: var(--monokai-fg);
-  --theme-primary: var(--monokai-purple);
-  --theme-secondary: var(--monokai-blue);
-  --theme-accent: var(--monokai-green);
-  --theme-success: var(--monokai-green);
-  --theme-warning: var(--monokai-yellow);
-  --theme-error: var(--monokai-red);
-  --theme-border: var(--monokai-orange);
+[data-theme="winter"] {
+  --theme-bg: #071427;
+  --theme-surface: #0e293f;
+  --theme-fg: #e6f0fb;
+  --theme-muted: #9fb6c9;
+  --theme-primary: #6fb3d2;
+  --theme-border: #173444;
+  --theme-accent: #9be7ff;
+}
+
+/* small utility classes that use theme variables */
+.btn {
+  background: var(--theme-surface);
+  color: var(--theme-fg);
+  border: 1px solid var(--theme-border);
+  padding: 0.45rem 0.75rem;
+  border-radius: 6px;
+}
+.btn-primary {
+  background: linear-gradient(
+    180deg,
+    var(--theme-primary),
+    color-mix(in srgb, var(--theme-primary) 60%, black)
+  );
+  color: white;
+  border: none;
+}
+.header {
+  border-bottom: 1px dashed var(--theme-border);
+  padding-bottom: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+
+/* small responsive tweaks for theme picker */
+.theme-picker .theme-button {
+  background: transparent;
+  border: 1px solid var(--theme-border);
+  color: var(--theme-fg);
 }

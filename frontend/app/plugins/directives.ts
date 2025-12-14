@@ -1,5 +1,5 @@
-import { vClickOutside } from '../directives/clickOutside'
+import { vClickOutside } from "../directives/clickOutside";
 
 export default defineNuxtPlugin((nuxtApp) => {
-  nuxtApp.vueApp.directive('click-outside', vClickOutside)
-})
+  nuxtApp.vueApp.directive("click-outside", vClickOutside);
+});

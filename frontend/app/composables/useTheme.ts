@@ -29,6 +29,11 @@ export const useTheme = () => {
       value: "monokai",
       preview: { bg: "#272822", fg: "#f8f8f2", primary: "#ae81ff" },
     },
+    {
+      name: "Solarized Dark",
+      value: "solarized",
+      preview: { bg: "#002b36", fg: "#839496", primary: "#268bd2" },
+    },
   ];
 
   const setTheme = (theme: string) => {
@@ -42,7 +47,7 @@ export const useTheme = () => {
   const initTheme = () => {
     if (process.client) {
       const saved = localStorage.getItem("theme");
-      if (saved) {
+      if (saved && themes.some((t) => t.value === saved)) {
         setTheme(saved);
       } else {
         setTheme("dracula");

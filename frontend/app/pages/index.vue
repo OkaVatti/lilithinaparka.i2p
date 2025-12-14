@@ -1,53 +1,87 @@
 <template>
-  <div class="max-w-5xl mx-auto py-10 px-4">
-    <section class="mb-12">
-      <div class="flex items-center justify-between gap-4">
-        <div>
-          <h1 class="text-4xl font-extrabold">{{ siteName }}</h1>
-          <p class="text-gray-600 mt-2 max-w-xl">
-            Classic macOS inspired eepsite — privacy-first, retro UI, blog, games and art.
-          </p>
-          <div class="mt-4 flex gap-3">
-            <NuxtLink to="/blog" class="btn">Read the blog</NuxtLink>
-            <NuxtLink to="/profile" class="btn btn-outline">My profile</NuxtLink>
+  <div class="home-page">
+    <div class="container">
+      <section class="hero window">
+        <div class="title-bar">
+          <div class="title-bar-text">Welcome</div>
+        </div>
+        <div class="window-body">
+          <div class="hero-content">
+            <h1>{{ siteName }}</h1>
+            <p class="tagline">
+              Privacy-first, retro-inspired eepsite on I2P
+            </p>
+            <p class="description">
+              A minimalist blog, game suite, and art gallery with a classic terminal aesthetic.
+              Built for the dark web with privacy and simplicity in mind.
+            </p>
+            
+            <div class="quick-links">
+              <NuxtLink to="/blog">
+                <button>📖 Read Blog</button>
+              </NuxtLink>
+              <NuxtLink to="/games">
+                <button>🎮 Play Games</button>
+              </NuxtLink>
+              <NuxtLink to="/profile">
+                <button>👤 View Profile</button>
+              </NuxtLink>
+            </div>
           </div>
         </div>
+      </section>
 
-        <div class="hidden md:block w-56">
-          <ProfileCard :user="currentUserPreview" v-if="currentUserPreview" />
+      <section class="recent-posts">
+        <div class="window">
+          <div class="title-bar">
+            <div class="title-bar-text">Latest Posts</div>
+          </div>
+          <div class="window-body">
+            <div v-if="loading" class="loading">Loading posts</div>
+            <div v-else-if="recentPosts.length > 0">
+              <BlogList :initialPosts="recentPosts" />
+            </div>
+            <div v-else class="no-content">
+              <p>No posts yet. Check back soon!</p>
+            </div>
+          </div>
         </div>
-      </div>
-    </section>
+      </section>
 
-    <section>
-      <h2 class="text-2xl font-semibold mb-4">Latest posts</h2>
-      <BlogList :initialPosts="recentPosts" :loading="loading" />
-    </section>
+      <section v-if="profileStore.profile" class="profile-preview">
+        <div class="window">
+          <div class="title-bar">
+            <div class="title-bar-text">Profile</div>
+          </div>
+          <div class="window-body">
+            <ProfileCard :user="profileStore.profile" />
+          </div>
+        </div>
+      </section>
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, onMounted } from '@vue/runtime-core'
 import { useRuntimeConfig } from '#imports'
 import { useApi } from '~/composables/useApi'
+import { useProfileStore } from '~~/stores/profile'
 import BlogList from '../components/blog/BlogList.vue'
 import ProfileCard from '../components/profile/ProfileCard.vue'
-import { useAuth } from '~/composables/useAuth'
 
 const config = useRuntimeConfig()
 const siteName = config.public.siteName || 'lilithinaparka.i2p'
 
 const { apiFetch } = useApi()
+const profileStore = useProfileStore()
+
 const recentPosts = ref<any[]>([])
 const loading = ref(true)
-
-const { user, isAuthenticated } = useAuth()
-const currentUserPreview = ref(null)
 
 async function loadRecent() {
   loading.value = true
   try {
-    // prefer server-side limit param if backend supports it
     const res = await apiFetch('/blog/posts?limit=6')
     recentPosts.value = Array.isArray(res) ? res : (res.items || [])
   } catch (e) {
@@ -58,23 +92,83 @@ async function loadRecent() {
   }
 }
 
-if (isAuthenticated.value && user.value) {
-  currentUserPreview.value = {
-    displayName: user.value.name || user.value.handle || 'You',
-    handle: user.value.handle || '',
-    bio: user.value.bio || 'Private profile'
-  }
-}
+onMounted(async () => {
+  await Promise.all([
+    loadRecent(),
+    profileStore.fetchProfile()
+  ])
+})
 
-// Load on mount
-loadRecent()
+useHead({
+  title: siteName,
+  meta: [
+    { name: 'description', content: 'Privacy-first retro blog and game portal on I2P' }
+  ]
+})
 </script>
 
 <style scoped>
-.btn {
-  @apply bg-black text-white px-3 py-1 rounded;
+.home-page {
+  padding: 2rem 0;
 }
-.btn-outline {
-  @apply border border-black px-3 py-1 rounded;
+
+.hero {
+  margin-bottom: 2rem;
+}
+
+.hero-content {
+  text-align: center;
+  padding: 2rem 1rem;
+}
+
+.hero-content h1 {
+  font-size: 2.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.tagline {
+  font-size: 1.2rem;
+  margin-bottom: 1rem;
+  color: var(--theme-accent);
+}
+
+.description {
+  max-width: 600px;
+  margin: 0 auto 2rem;
+  line-height: 1.8;
+}
+
+.quick-links {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.quick-links button {
+  min-width: 150px;
+}
+
+.recent-posts,
+.profile-preview {
+  margin-bottom: 2rem;
+}
+
+.no-content {
+  text-align: center;
+  padding: 2rem;
+  color: var(--theme-fg);
+  opacity: 0.7;
+}
+
+@media (max-width: 768px) {
+  .hero-content h1 {
+    font-size: 1.8rem;
+  }
+  
+  .quick-links {
+    flex-direction: column;
+    align-items: stretch;
+  }
 }
 </style>

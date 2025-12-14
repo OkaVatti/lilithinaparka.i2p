@@ -1,3 +1,18 @@
+/* Import system.css base */
+@import url("./system.css");
+
+/* Override system.css variables for terminal aesthetic */
+:root {
+  /* Use system.css variables but customize */
+  --surface: var(--theme-bg);
+  --button-highlight: var(--theme-primary);
+  --button-face: var(--theme-bg);
+  --button-shadow: var(--theme-border);
+  --window-frame: var(--theme-border);
+  --dialog-blue: var(--theme-primary);
+  --dialog-gray: var(--theme-fg);
+}
+
 * {
   box-sizing: border-box;
 }
@@ -7,7 +22,7 @@ body {
   padding: 0;
   background-color: var(--theme-bg);
   color: var(--theme-fg);
-  font-family: "Courier New", monospace;
+  font-family: "Courier New", "Consolas", monospace;
   line-height: 1.6;
 }
 
@@ -23,11 +38,31 @@ body {
   padding: 2rem 0;
 }
 
-/* Typography */
+/* Typography enhancements */
 h1, h2, h3, h4, h5, h6 {
   margin-top: 0;
   margin-bottom: 1rem;
   color: var(--theme-primary);
+  font-weight: bold;
+}
+
+h1 {
+  font-size: 2rem;
+}
+h2 {
+  font-size: 1.75rem;
+}
+h3 {
+  font-size: 1.5rem;
+}
+h4 {
+  font-size: 1.25rem;
+}
+h5 {
+  font-size: 1.1rem;
+}
+h6 {
+  font-size: 1rem;
 }
 
 a {
@@ -39,6 +74,55 @@ a {
 a:hover {
   color: var(--theme-secondary);
   text-decoration: underline;
+}
+
+/* System.css window overrides */
+.window {
+  background: var(--theme-bg);
+  border: 2px solid var(--theme-border);
+  box-shadow:
+    inset -1px -1px var(--theme-shadow),
+    inset 1px 1px rgba(255, 255, 255, 0.1);
+}
+
+.title-bar {
+  background: var(--theme-primary);
+  color: var(--theme-bg);
+  padding: 0.25rem 0.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.window-body {
+  padding: 1rem;
+}
+
+/* System.css button overrides */
+button, .button {
+  background: var(--theme-bg);
+  border: 2px solid var(--theme-border);
+  color: var(--theme-fg);
+  padding: 0.5rem 1rem;
+  font-family: inherit;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+button:hover, .button:hover {
+  background: var(--theme-primary);
+  color: var(--theme-bg);
+  border-color: var(--theme-primary);
+}
+
+button:active, .button:active {
+  box-shadow: inset 1px 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+button:disabled, .button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 /* Code blocks */
@@ -55,6 +139,7 @@ code {
   background: rgba(0, 0, 0, 0.2);
   padding: 0.2rem 0.4rem;
   border-radius: 3px;
+  font-size: 0.9em;
 }
 
 pre code {
@@ -62,47 +147,40 @@ pre code {
   padding: 0;
 }
 
-/* Cards */
+/* Cards with system.css aesthetic */
 .card {
   background: var(--theme-bg);
   border: 2px solid var(--theme-border);
-  border-radius: 4px;
   padding: 1.5rem;
   margin-bottom: 1rem;
-  box-shadow: 0 2px 4px var(--theme-shadow);
+  box-shadow: 2px 2px 0 var(--theme-shadow);
 }
 
 .card:hover {
   border-color: var(--theme-primary);
-  box-shadow: 0 4px 8px var(--theme-shadow);
+  box-shadow: 3px 3px 0 var(--theme-shadow);
 }
 
-/* Buttons */
-.btn {
-  display: inline-block;
-  padding: 0.5rem 1rem;
-  background: var(--theme-primary);
-  color: var(--theme-bg);
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: all 0.2s;
-  font-family: inherit;
-}
-
-.btn:hover {
-  background: var(--theme-secondary);
-  transform: translateY(-2px);
-  box-shadow: 0 4px 8px var(--theme-shadow);
-}
-
-.btn-secondary {
-  background: var(--theme-border);
+/* Forms */
+input[type="text"],
+input[type="password"],
+input[type="email"],
+input[type="number"],
+textarea,
+select {
+  background: var(--theme-bg);
+  border: 2px inset var(--theme-border);
   color: var(--theme-fg);
+  padding: 0.5rem;
+  font-family: inherit;
+  width: 100%;
 }
 
-.btn-secondary:hover {
-  background: var(--theme-accent);
+input:focus,
+textarea:focus,
+select:focus {
+  outline: 1px dotted var(--theme-primary);
+  outline-offset: -2px;
 }
 
 /* Loading states */
@@ -133,7 +211,6 @@ pre code {
 .error {
   background: rgba(255, 85, 85, 0.1);
   border: 2px solid var(--theme-error);
-  border-radius: 4px;
   padding: 1rem;
   margin: 1rem 0;
   color: var(--theme-error);
@@ -188,6 +265,26 @@ pre code {
   padding: 1.5rem;
 }
 
+/* Scrollbar styling for terminal look */
+::-webkit-scrollbar {
+  width: 16px;
+  height: 16px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--theme-bg);
+  border: 2px inset var(--theme-border);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--theme-border);
+  border: 2px outset var(--theme-border);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--theme-primary);
+}
+
 /* Responsive */
 @media (max-width: 768px) {
   .container {
@@ -197,4 +294,24 @@ pre code {
   .grid-2, .grid-3 {
     grid-template-columns: 1fr;
   }
+
+  .window {
+    margin: 0.5rem;
+  }
+}
+
+/* Animations */
+@keyframes blink {
+  0%, 50% {
+    opacity: 1;
+  }
+  51%, 100% {
+    opacity: 0;
+  }
+}
+
+.cursor-blink::after {
+  content: "▮";
+  animation: blink 1s infinite;
+  margin-left: 2px;
 }
